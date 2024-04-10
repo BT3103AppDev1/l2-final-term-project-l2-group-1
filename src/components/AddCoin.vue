@@ -4,94 +4,126 @@
       <h2>Add Coins</h2>
 
       <div class="formli">
-        <label for="coin1">Coin Name: </label>
-        <input type="text" id="coin" required="" placeholder="Enter your coin"> <br><br>
-        <label for="ticker1">Ticker: </label>
-        <input type="text" id="ticker1" required="" placeholder="valid (eg: BTC/USDT)"> <br><br>
-        <label for="buy1">Buy Price: </label>
-        <input type="number" id="buy1" required="" placeholder="Enter the price"> <br><br>
-        <label for="quant1">Buy Quantity: </label>
-        <input type="number" id="quant1" required="" placeholder="Enter the quantity"> <br><br>
-        
-        <div class ="save">
-          <button id = "savebutton" type="button" v-on:click="savetofs">Save </button>
-        </div> 
+        <label for="coin1">Amount:</label>
+        <input type="number" id="coin1" required="" v-model="coin"> <br><br>
+
+
+        <label for="ticker1">Category: </label>
+        <select id="ticker1" required="" v-model="ticker">
+          <option disabled value="">Please select a category</option>
+          <option value="Mortgage or rent">Mortgage or rent</option>
+          <option value="Food">Food</option>
+          <option value="Transportation">Transportation</option>
+          <option value="Utilities">Utilities</option>
+          <option value="Subscriptions">Subscriptions</option>
+          <option value="Personal expenses">Personal expenses</option>
+          <option value="Savings and investments">Savings and investments</option>
+          <option value="Debt or student loan payments">Debt or student loan payments</option>
+          <option value="Health care">Health care</option>
+          <option value="Miscellaneous expenses">Miscellaneous expenses</option>
+        </select>
+        <br>
+
+        <label for="buy1">Subcategory: </label>
+        <input type="text" id="buy1" required="" v-model="buyPrice"><br><br>
+        <label for="quant1">Date of Spending: </label>
+        <input type="date" id="quant1" required="" v-model="buyQuantity"><br><br>
+
+        <div class="save">
+          <button id="savebutton" type="button" v-on:click="savetofs"> Log it in! </button>
+        </div>
       </div>
-    </form> 
+    </form>
   </div>
 </template>
 
-<script>
-import firebaseApp from '../firebase.js'; 
-import { getFirestore, doc, setDoc } from "firebase/firestore";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
 
+<script>
+import firebaseApp from '../firebase.js';
+import { getFirestore } from "firebase/firestore"
+import { doc, setDoc, collection } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 const db = getFirestore(firebaseApp);
 
 export default {
+
   data() {
     return {
-      useremail: null,
-    };
+      coin: "", ticker: "", buyPrice: "", buyQuantity: "", useremail: ""
+    }
   },
 
-  mounted() {
-    const auth = getAuth();
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        this.useremail = user.email;
-      }
-    });
-  },
-  
   methods: {
     async savetofs() {
-      console.log("IN AC")
-    
-      let coin = document.getElementById("coin").value
-      let ticker = document.getElementById("ticker1").value 
-      let buyPrice = document.getElementById("buy1").value
-      let buyQuantity = document.getElementById("quant1").value
+      console.log("Saving to Firestore")
 
-      alert (" Saving your data for Coin: " + coin)
+      const auth = getAuth();
+      console.log("Auth: ", auth.currentUser);
+      this.useremail = auth.currentUser.email;
+      console.log("User's email: ", this.useremail);
+
+      const uniqueID = `${this.buyQuantity}_${this.ticker}_${this.buyPrice}_${this.coin}`
+      alert(" Saving your data for Coin : " + uniqueID)
 
       try {
-        const docRef = await setDoc(doc(db, String(this.useremail), coin), {
-        Coin: coin, Ticker: ticker, Buy_Price: buyPrice, Buy_Quantity: buyQuantity
+        const docRef = await setDoc(doc(db, String(this.useremail), uniqueID), { // make unique ID
+          Amount: this.coin, Category: this.ticker, Subcategory: this.buyPrice, Date: this.buyQuantity
         })
-        console.log(docRef)
+
+        if (docRef) {
+          console.log("Document ref ID: ", docRef.id);
+        } else {
+          console.error("Document reference is undefined");
+        }
         document.getElementById('myform').reset();
-        this.$emit("added")
+        this.$emit("added");
+        // console.log("Document ref ID: ", docRef.id)
+        // document.getElementById('myform').reset();
+        // this.$emit("added")
       }
-      catch(error) {
-          console.error ("Error adding document: ", error);
+      catch (error) {
+        console.error("Error adding document: ", error);
       }
     }
+    
+
   }
 }
+
+
 </script>
 
 <style scoped>
-h2 {
-  background-color: rgb(129, 184,99);
-}
+/* h2{
+background-color: rgb(129, 184,99);
+} */
+
 .formli {
   display: inline-block;
   text-align: right;
 }
 
 form {
-  text-align: center; 
+  text-align: center;
   align-items: center;
   margin: auto;
 }
 
-input:hover {
-  box-shadow: 3px 3px purple;
-  border-radius: 2px;
+input {
+  border: 2px solid red;
+  border-radius: 4px;
 }
 
 .save {
-  text-align: center
+  text-align: center;
+}
+
+.container {
+  background-color: #00004B;
+  color: azure;
+}
+
+option {
+  color: navy;
 }
 </style>

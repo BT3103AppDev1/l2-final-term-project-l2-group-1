@@ -1,7 +1,11 @@
-import './assets/main.css'
-
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router/index.js'
+import VueChartkick from 'vue-chartkick'
+import 'chartkick/chart.js'
 
-createApp(App).use(router).mount('#app')
+const app = createApp(App);
+
+app.use(VueChartkick);
+app.use(router);
+app.mount('#app')

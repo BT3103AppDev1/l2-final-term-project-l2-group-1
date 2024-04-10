@@ -1,17 +1,17 @@
 import { initializeApp } from 'firebase/app';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCwDl0gP36_GtMpVb8sMYWmcp0d8j7cmO8",
-    authDomain: "democpp-dbbc7.firebaseapp.com",
-    projectId: "democpp-dbbc7",
-    storageBucket: "democpp-dbbc7.appspot.com",
-    messagingSenderId: "261141480958",
-    appId: "1:261141480958:web:52b6d7252acf8d9eb2ecaf",
-    measurementId: "G-N9CBZ1KEZM"
-  };
+    apiKey: "AIzaSyATO5WL6DAesJ_g-QOwX3yKR6-4qrbmiUE",
+    authDomain: "democpp-btjd.firebaseapp.com",
+    projectId: "democpp-btjd",
+    storageBucket: "democpp-btjd.appspot.com",
+    messagingSenderId: "547516002956",
+    appId: "1:547516002956:web:f9bd9f6f6a8990715701a9"
+};
 
 const firebaseApp = initializeApp(firebaseConfig);
 
 export default firebaseApp;
+
 
 

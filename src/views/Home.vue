@@ -1,32 +1,65 @@
 <template>
-<WelcomeCpp/>
-<AddCoin @added="change" />
-<ProfitDisplay :key="refreshComp" />
-<img id = "bg" src="@/assets/Coins2.png" alt="">
-</template>
+  <div style="text-align:center;" v-if="user">
+    <NavBar/>
+    <WelcomeCpp/>
+    <AddCoin  @added="change" />
+    <TotalAmount/>
+    <!-- <ProfitDisplay :key="refreshComp" /> -->
     
+    <LogOut/>
+  </div>
+</template>
+
 <script>
-import WelcomeCpp from '@/components/WelcomeCpp.vue' 
+
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import WelcomeCpp from '@/components/WelcomeCpp.vue'
 import AddCoin from '@/components/AddCoin.vue'
 import ProfitDisplay from '@/components/ProfitDisplay.vue'
+import NavBar from '@/components/NavBar.vue'
+import LogOut from '@/components/LogOut.vue'
+import TotalAmount from '@/components/TotalAmount.vue'
 
 export default {
-  name: "App",
-  
-  components: {
-    WelcomeCpp, 
-    AddCoin, 
-    ProfitDisplay
-  }, 
-  data() {
-    return {
-      refreshComp: 0
-    }
+  name: 'Home',
+  components:{
+    WelcomeCpp,
+    AddCoin,
+    ProfitDisplay,
+    NavBar,
+    LogOut,
+    TotalAmount
   },
-  methods: {
-    change() {
-      this.refreshComp += 1
+
+  data(){
+    return{
+      user:false,
+      refreshComp:0
+      }
+    },
+
+  mounted() {
+    const auth = getAuth();
+    onAuthStateChanged(auth, user => {
+      this.user = user;
+      })
+  },
+  
+  methods:{
+
+  change(){
+     this.refreshComp += 1
     }
-  } 
+  }
 }
+
 </script>
+
+<style scoped>
+#bg { 
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 60%;
+}
+</style>
