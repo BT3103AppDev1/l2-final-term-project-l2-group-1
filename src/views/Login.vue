@@ -21,8 +21,9 @@
                         <i class='bx bx-envelope'></i>
                     </div>
                     <div class="input-container">
-                        <input type="password" v-model="password" placeholder="Password" required>
+                        <input :type="showPassword ? 'text':'password'" v-model="password" placeholder="Password" required>
                         <i class='bx bxs-lock-alt'></i>
+                        <span @click="showHidePassword"><img class="eye" :src="showPassword ? eyeOpenIcon : eyeCloseIcon"></span>
                     </div>
                         <!-- Router link to forgot password page -->
                         <a class="forgot-password" href="#">Forgot Password?</a> 
@@ -36,6 +37,8 @@
 </template>
 
 <script>
+import eyeClose from '@/assets/Eye-close.png';
+import eyeOpen from '@/assets/Eye-open.png';
 import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { query, getDocs, collection, where, getFirestore } from 'firebase/firestore';
 import firebaseApp from '@/firebase.js';
@@ -45,41 +48,49 @@ export default {
 
     data() {
         return {
-            username: '',
+            email: '',
             password: '',
+            showPassword: false,
+            eyeCloseIcon: eyeClose,
+            eyeOpenIcon: eyeOpen,
             auth: getAuth(firebaseApp),
             db: getFirestore(firebaseApp)
         }
     },
 
     methods: {
-    async loginWithEmail() {
-      try {
-        // Logss in a user with email and password
-        await signInWithEmailAndPassword(this.auth, this.email, this.password);
+        showHidePassword() {
+            this.showPassword = !this.showPassword;
+        },
 
-        // Redirects users to the home page
-        this.$router.push('/home');
+        async loginWithEmail() {
+            try {
+            // Logss in a user with email and password
+            await signInWithEmailAndPassword(this.auth, this.email, this.password);
 
-      } catch (error) {
-        alert("Incorrect email / password");
-      }
-    },
+            // Redirects users to the home page
+            this.$router.push('/home');
 
-    async loginWithGoogle() {
-      const provider = new GoogleAuthProvider();
-      try {
-        // Displays a popup window for google account login
-        const result = await signInWithPopup(this.auth, provider);
+            } catch (error) {
+            alert("Incorrect email / password");
+            }
+        },
 
-        // Redirects users to the home page
-        this.$router.push('/home');
+        async loginWithGoogle() {
+            const provider = new GoogleAuthProvider();
+            try {
+            // Displays a popup window for google account login
+            const result = await signInWithPopup(this.auth, provider);
 
-      } catch (error) {
-        alert(error.message);
-      }
-    }
+            // Redirects users to the home page
+            this.$router.push('/home');
+
+            } catch (error) {
+            alert(error.message);
+            }
+        }
   }
+
 };
 </script>
 
@@ -110,8 +121,8 @@ export default {
 }
 
 .header-container {
-    display: flex; /* Use flexbox for easy vertical alignment */
-    align-items: center; /* This will vertically align the children (logo and h1) in the middle */
+    display: flex; 
+    align-items: center; 
     justify-content: flex-start; 
     grid-column: 1 / -1; 
     grid-row: 1;
@@ -181,12 +192,13 @@ export default {
   margin: 10px 0;
 }
 
-input[type=email], input[type=password] {
+input[type=email], input[type=password], input[type=text] {
   width: 70% ; 
   padding: 15px 15px 15px 35px; 
   margin: 0; 
   border: 1px solid #ccc;
   box-sizing: border-box;
+  position: relative;
   border-radius: 16px;
   outline: none;
 }
@@ -199,9 +211,23 @@ input[type=email], input[type=password] {
   color: #908d8d; 
 }
 
-input[type='email']:focus, input[type='password']:focus {
-  border: 2px solid #8414EC; /* Change the border color */
-  transform: scale(1.05); /* Scale the input field */
+input[type='email']:focus, input[type='password']:focus, input[type='text']:focus {
+  border: 2px solid #8414EC; 
+  transform: scale(1.025); 
+}
+
+input[type='email']:focus + i, input[type='password']:focus + i, input[type='text']:focus + i {
+  color: #8414EC;
+}
+
+.eye {
+    position: absolute; 
+    right: 103px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 13px; 
+    width: auto;
+    cursor: pointer;
 }
 
 .forgot-password, .signup-link {
