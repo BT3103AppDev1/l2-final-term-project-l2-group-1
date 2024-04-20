@@ -4,18 +4,27 @@ import About from '@/views/About.vue'
 import OnlyProfit from '@/views/OnlyProfit.vue'
 import Profile from '@/views/Profile.vue'
 import NotFound from '@/views/NotFound.vue'
-import Login from '@/components/Login.vue'
-
-
-
+import Login from '@/views/Login.vue'
+import Registration from '@/views/Registration.vue'
+// import ForgotPassword from '@/views/ForgotPassword.vue'
 
 
 const routes = [
   {
-      path: "/",
-      name: "Login",
-      component: Login,
-    },
+    path: "/",
+    name: "Login",
+    component: Login,
+  },
+  {
+    path: '/registration',
+    name: 'Registration',
+    component: Registration
+  },
+  // {
+  //   path: '/forgotpassword',
+  //   name: 'ForgotPassword',
+  //   component: ForgotPassword
+  // },
   {
 
     path: '/home',
