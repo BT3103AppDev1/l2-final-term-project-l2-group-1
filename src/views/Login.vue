@@ -25,7 +25,7 @@
                         <i class='bx bxs-lock-alt'></i>
                         <span @click="showHidePassword"><img class="eye" :src="showPassword ? eyeOpenIcon : eyeCloseIcon"></span>
                     </div>
-                        <!-- Router link to forgot password page -->
+                        <!-- Change a tag to router link to forgot password page -->
                         <a class="forgot-password" href="#">Forgot Password?</a> 
                     <button type="submit" class="login-button">Login</button>
                     <button @click="loginWithGoogle" class="google-login">Sign in with Google</button>
@@ -169,55 +169,50 @@ export default {
 	justify-content: flex-start;
 	align-items: center;
 	text-align: center;
-    padding-right:0px;
+    padding: 15px 0px;
     margin-top: -30px;
+    margin-left: 20px;
 }
 
 .image-container, .login-container {
     margin-bottom: 100px;
 }
 
-
 .login-text {
     margin-bottom: 30px;
 }
 
-.welcome-text {
-    text-align: center;
-    padding-bottom: 10px;
-}
-
 .input-container {
-  position: relative;
-  margin: 10px 0;
+    position: relative;
+    margin: 10px 0;
 }
 
 input[type=email], input[type=password], input[type=text] {
-  width: 70% ; 
-  padding: 15px 15px 15px 35px; 
-  margin: 0; 
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-  position: relative;
-  border-radius: 16px;
-  outline: none;
+    width: 70% ; 
+    padding: 15px 15px 15px 35px; 
+    margin: 0; 
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    position: relative;
+    border-radius: 16px;
+    outline: none;
 }
 
 .input-container i {
-  position: absolute;  
-  left: 103px; 
-  top: 50%;
-  transform: translateY(-50%);
-  color: #908d8d; 
+    position: absolute;  
+    left: 103px; 
+    top: 50%;
+    transform: translateY(-50%);
+    color: #908d8d; 
 }
 
 input[type='email']:focus, input[type='password']:focus, input[type='text']:focus {
-  border: 2px solid #8414EC; 
-  transform: scale(1.025); 
+    border: 2px solid #8414EC; 
+    transform: scale(1.025); 
 }
 
 input[type='email']:focus + i, input[type='password']:focus + i, input[type='text']:focus + i {
-  color: #8414EC;
+    color: #8414EC;
 }
 
 .eye {
@@ -231,31 +226,37 @@ input[type='email']:focus + i, input[type='password']:focus + i, input[type='tex
 }
 
 .forgot-password, .signup-link {
-  text-decoration: none;
-  color: #4116b7; 
+    text-decoration: none;
+    color: #4116b7; 
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+.signup-link:hover {
+    text-decoration: underline;
 }
 
 .forgot-password {
-  display: block;
-  text-align: right;
-  margin: 10px 95px 10px 0px;
-  font-size: 15px; 
+    display: block;
+    text-align: right;
+    margin: 10px 95px 10px 0px;
+    font-size: 15px; 
 }
 
 .login-button, .google-login {
-  width: 70%;
-  padding: 15px;
-  margin: 10px 0;
-  border: none;
-  color: white;
-  cursor: pointer;
-  border-radius: 16px;
-  font-weight: bold;
-
+    width: 70%;
+    padding: 15px;
+    margin: 10px 0;
+    border: none;
+    color: white;
+    cursor: pointer;
+    border-radius: 16px;
+    font-weight: bold;
 }
 
-button:hover{
-	background-position: left;
+button:hover {
     transform: scale(1.01);
 }
 
