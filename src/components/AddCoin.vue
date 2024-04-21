@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <form id="myform">
-      <h2>Add Coins</h2>
+      <h2 id="Header">Add Expenditure</h2>
 
       <div class="formli">
         <label for="amt">Amount:</label>
@@ -125,32 +125,61 @@ export default {
 </script>
 
 <style scoped>
-.formli {
-  display: inline-block;
-  text-align: right;
-}
+#Header {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  color: #4116b7;
+  font-size: 45px;
+  text-shadow: 3px 3px rgb(205, 205, 205);
 
-form {
-  text-align: center;
-  align-items: center;
-  margin: auto;
-}
-
-input {
-  border: 2px solid red;
-  border-radius: 4px;
-}
-
-.save {
-  text-align: center;
 }
 
 .container {
-  background-color: #00004b;
-  color: azure;
+  max-width: 600px; /* Or whatever maximum width you prefer */
+  margin: auto; /* Center the container */
+  padding: 20px;
+  box-sizing: border-box;
 }
 
-option {
-  color: navy;
+.form-group {
+  margin-bottom: 20px; /* Space out each form group */
 }
+
+label {
+  color: #4321a0;
+  display: inline-block;
+  font-size: 20px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  width: 30%; /* Adjust the width as necessary */
+  text-align: right;
+  margin-right: 10px; /* Space between label and input */
+}
+
+input[type="number"],
+input[type="text"],
+input[type="date"],
+select {
+  width: 65%; /* Adjust the width as necessary */
+  padding: 5px;
+  color: #4321a0;
+  box-sizing: border-box;
+}
+
+#savebutton {
+  width: 40%;
+  padding: 15px;
+  margin: 10px 0;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 16px;
+  font-weight: bold;
+  background-image: linear-gradient(to right, #8414EC, #740CCC, #4116b7); 
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+#savebutton:hover {
+  background-color: #4f339c;
+  box-shadow: 3px 3px grey 
+}
+
 </style>
