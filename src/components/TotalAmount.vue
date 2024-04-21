@@ -44,5 +44,10 @@ export default {
 </script>
 
 <style>
-/* Your styles here */
+#totalProfit {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  color: #4116b7;
+  font-size: 50px;
+  text-shadow: 3px 3px rgb(205, 205, 205);
+}
 </style>
