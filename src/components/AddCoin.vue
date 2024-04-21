@@ -46,7 +46,7 @@
 <script>
 import firebaseApp from "../firebase.js";
 import { getFirestore } from "firebase/firestore";
-import { collection, addDoc } from "firebase/firestore";
+import { setDoc, doc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 const db = getFirestore(firebaseApp);
 
@@ -84,15 +84,23 @@ export default {
     async savetofs() {
       console.log("Saving to Firestore");
       const auth = getAuth();
+
+      if (!auth.currentUser) {
+        console.error("No user is currently logged in.");
+        return; // Stop execution if no user is logged in
+      }
+
+      const userEmail = auth.currentUser.email;
       console.log(this.getMonthYearOfEntry());
+      
       try {
-        const docRef = await addDoc(
-          collection(
-            db,
-            auth.currentUser.email,
-            "logs",
-            this.getMonthYearOfEntry()
-          ),
+      const sanitizedDate = this.date.replace(/[-\/\s:]/g, '');
+      const sanitizedSubcat = this.subcat.replace(/[\s\/]+/g, '_'); // Replace spaces and slashes with underscores
+
+      const customDocId = `${this.amt}_${sanitizedDate}_${sanitizedSubcat}`;
+
+        await setDoc(
+          doc(db, userEmail, "logs", this.getMonthYearOfEntry(), customDocId),
           {
             amount: this.amt,
             category: this.cat,
@@ -101,17 +109,17 @@ export default {
           }
         );
 
-        if (docRef) {
-          console.log("Document ref ID: ", docRef.id);
-        } else {
-          console.error("Document reference is undefined");
-        }
-        document.getElementById("myform").reset();
-        this.$emit("added");
+        console.log("Document written with ID: ", customDocId);
+        this.amt = "";
+        this.cat = "";
+        this.subcat = "";
+        this.date = ""; // Reset Vue data properties
+        this.$emit("added"); // Notify any parent components
       } catch (error) {
         console.error("Error adding document: ", error);
       }
     },
+
   },
 };
 </script>
