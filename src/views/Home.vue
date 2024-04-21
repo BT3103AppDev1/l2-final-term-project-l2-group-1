@@ -1,12 +1,14 @@
 <template>
-  <div style="text-align:center;" v-if="user">
-    <NavBar/>
-    <WelcomeCpp/>
-    <AddCoin  @added="change" />
-    <TotalAmount/>
-    <!-- <ProfitDisplay :key="refreshComp" /> -->
+  <div id ="background-container">
+    <div style="text-align:center;" v-if="user">
+     <NavBar/>
+     <WelcomeCpp/>
+     <AddCoin  @added="change" />
+     <TotalAmount/>
+      <!-- <ProfitDisplay :key="refreshComp" /> -->
     
-    <LogOut/>
+     <LogOut/>
+    </div>
   </div>
 </template>
 
@@ -56,10 +58,7 @@ export default {
 </script>
 
 <style scoped>
-#bg { 
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    width: 60%;
-}
+#background-container { 
+  background-color: rgb(255, 255, 255);
+} 
 </style>
