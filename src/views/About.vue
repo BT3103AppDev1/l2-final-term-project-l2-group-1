@@ -20,13 +20,7 @@
 import NavBar from "@/components/NavBar.vue";
 import LogOut from "@/components/LogOut.vue";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  getFirestore,
-} from "firebase/firestore";
+import { collection, doc, getDocs, getFirestore } from "firebase/firestore";
 import firebaseApp from "../firebase.js";
 
 export default {
@@ -55,12 +49,12 @@ export default {
       });
     },
 
-    async setPieData(uid) {
+    async setPieData(email) {
       const db = getFirestore(firebaseApp);
       const monthYear = this.getMonthYear();
       const pie = {};
       const currMonthEntries = await getDocs(
-        collection(db, uid, "logs", monthYear)
+        collection(db, email, "logs", monthYear)
       );
       this.pieData = {};
       currMonthEntries.forEach((doc) => {
@@ -73,7 +67,7 @@ export default {
       this.pieData = pie;
     },
 
-    async setColData(uid) {
+    async setColData(email) {
       const months = [
         "January ",
         "February ",
@@ -89,7 +83,7 @@ export default {
         "December ",
       ];
       const db = getFirestore(firebaseApp);
-      const allMonthEntries = doc(db, uid, "logs");
+      const allMonthEntries = doc(db, email, "logs");
       const currDateTime = new Date();
       const col = {};
       var monthIter = "";
@@ -132,8 +126,8 @@ export default {
       if (user) {
         this.user = user;
         this.mmyy = this.getMonthYear();
-        this.setPieData(user.uid);
-        this.setColData(user.uid);
+        this.setPieData(user.email);
+        this.setColData(user.email);
       }
     });
   },
