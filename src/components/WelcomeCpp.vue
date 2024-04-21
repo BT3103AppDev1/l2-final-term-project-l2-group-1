@@ -1,6 +1,9 @@
 <template>
-  <img id="bg" src="@/assets/Money.png" alt="" style="position: absolute; top: 0; left: 0">
-  <h1>Welcome to Finwise - the worst expenditure tracker in the world!</h1>
+  <div class="WelcomeToFinWise">
+    <div id="Welcome">
+      <h1>Welcome to FinWise!</h1>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -11,16 +14,38 @@ export default {
 </script>
 
 <style scoped>
-h1 {
-  /* background-color: rgb(129, 184, 99); */
-  /* display: inline-block; */
-  text-align: center;
-  font-family: "Georgia";
+
+.WelcomeToFinWise {
+  place-items: center;
+  min-height: 1000px;
+  display: grid;
+  position: relative;
+  background-image: url('@/assets/Homebackground.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
-.bg {
-  position: absolute;
-  top: 0;
-  left: 0;
+.WelcomeToFinWise > * {
+  grid-area: auto;
+  animation: parallax linear;
+  animation-timeline: scroll();
 }
+
+#Welcome {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  --parallax-speed: -20;
+  z-index: 2;
+  font-size: 60px;
+  color: #740CCC;
+  text-shadow: 6px 6px rgb(255, 255, 255);
+  align-content: center;
+}
+
+@keyframes parallax {
+  to {
+    transform: translateY(calc(var(--parallax-speed) * 100px));
+  }
+}
+
 </style>
