@@ -140,8 +140,9 @@ export default {
         }),
       );  
       this.tableRows = this.tableRows.concat(newRows)
-      console.log(this.tableRows)
+      //console.log(this.tableRows)
       }
+      this.tableRows.sort((a, b) => new Date(b.date) - new Date(a.date));
     },  
 
     async deleteInstrument(documentId) {
