@@ -65,7 +65,7 @@ export default {
 
     methods: {
         validateEmail() {
-            const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,4}))$/;
+            const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,3}))$/;
             if (!this.email) {
                 this.isEmailValid = false;
                 this.emailError = null;
@@ -218,9 +218,16 @@ export default {
     position: relative;
 }  
 
-input[type=email], input[type=password], input[type=text] {
-    width: 70% ; 
+input[type=email] {
     padding: 15px 15px 15px 35px; 
+}
+
+input[type=password], input[type=text] {
+    padding: 15px 45px 15px 35px;
+}
+
+input[type=email], input[type=password], input[type=text] {
+    width: 70% ;  
     margin: 0; 
     border: 1px solid #ccc;
     box-sizing: border-box;
@@ -267,7 +274,6 @@ input[type='email']:focus + i, input[type='text']:focus + i {
     text-align: left;
     padding-left: 95px;
 }
-
 
 .password-eye {
     position: absolute; 
