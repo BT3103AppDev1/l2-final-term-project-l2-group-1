@@ -44,12 +44,20 @@ export default {
 
 style <style scoped>
 #btn{
-    text-align: center;
-    margin: auto;
+  width: 40%;
+  padding: 15px;
+  margin: 10px 0;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 16px;
+  font-weight: bold;
+  background-color:#DB4437; 
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 #btn:hover{
     color:rgb(243, 236, 236);
-    background-color: rgb(255, 94, 0);
+    background-color:#bc382c;
     box-shadow: 3px 3px grey 
 }
 
