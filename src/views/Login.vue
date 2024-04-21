@@ -17,13 +17,16 @@
                 <h1 class="login-text">Login</h1>
                 <form @submit.prevent="loginWithEmail">
                     <div class="input-container">
-                        <input type="email" v-model="email" placeholder="Email" required>
-                        <i class='bx bx-envelope'></i>
+                        <div class="input-wrapper">
+                            <input type="email" v-model="email" @input="validateEmail" :class="{'email-invalid': emailError, 'email-valid': isEmailValid && email}" placeholder="Email" required>
+                            <i class='bx bx-envelope' :class="{'icon-invalid': emailError, 'icon-valid': isEmailValid && email}"></i>
+                        </div>
+                        <span class="email-error" v-if="emailError">{{ emailError }}</span>
                     </div>
                     <div class="input-container">
                         <input :type="showPassword ? 'text':'password'" v-model="password" placeholder="Password" required>
                         <i class='bx bxs-lock-alt'></i>
-                        <span @click="showHidePassword"><img class="eye" :src="showPassword ? eyeOpenIcon : eyeCloseIcon"></span>
+                        <span @click="showHidePassword"><img class="password-eye" :src="showPassword ? eyeOpenIcon : eyeCloseIcon"></span>
                     </div>
                         <!-- Change a tag to router link to forgot password page -->
                         <a class="forgot-password" href="#">Forgot Password?</a> 
@@ -50,15 +53,31 @@ export default {
         return {
             email: '',
             password: '',
-            showPassword: false,
-            eyeCloseIcon: eyeClose,
-            eyeOpenIcon: eyeOpen,
+            emailError: null, // For email validation
+            isEmailValid: true, // For email validation
+            showPassword: false, // For password display
+            eyeCloseIcon: eyeClose, // For password display
+            eyeOpenIcon: eyeOpen, // For password display
             auth: getAuth(firebaseApp),
             db: getFirestore(firebaseApp)
         }
     },
 
     methods: {
+        validateEmail() {
+            const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,4}))$/;
+            if (!this.email) {
+                this.isEmailValid = false;
+                this.emailError = null;
+            } else if (emailRegex.test(this.email)) {
+                this.isEmailValid = true;
+                this.emailError = null;
+            } else {
+                this.isEmailValid = false;
+                this.emailError = "Please enter a valid email address";
+            }
+        },
+
         showHidePassword() {
             this.showPassword = !this.showPassword;
         },
@@ -155,8 +174,8 @@ export default {
     grid-column: 2; 
     grid-row: 2;
     padding-bottom: 40px;
-    margin-top: -16px;
-    margin-right: -1px;
+    margin-top: -40px;
+    margin-right: -10px;
 }
 
 .profile {
@@ -187,6 +206,18 @@ export default {
     margin: 10px 0;
 }
 
+.input-container i {
+    position: absolute;  
+    left: 103px; 
+    top: 50%;
+    transform: translateY(-50%);
+    color: #908d8d; 
+}
+
+.input-wrapper {
+    position: relative;
+}  
+
 input[type=email], input[type=password], input[type=text] {
     width: 70% ; 
     padding: 15px 15px 15px 35px; 
@@ -198,14 +229,6 @@ input[type=email], input[type=password], input[type=text] {
     outline: none;
 }
 
-.input-container i {
-    position: absolute;  
-    left: 103px; 
-    top: 50%;
-    transform: translateY(-50%);
-    color: #908d8d; 
-}
-
 input[type='email']:focus, input[type='password']:focus, input[type='text']:focus {
     border: 2px solid #8414EC; 
     transform: scale(1.025); 
@@ -215,7 +238,38 @@ input[type='email']:focus + i, input[type='password']:focus + i, input[type='tex
     color: #8414EC;
 }
 
-.eye {
+input[type='email']:focus + i, input[type='text']:focus + i {
+    color: #8414EC;
+}
+
+/* Email validation styles should override focus styles */
+.email-invalid {
+    border: 2px solid #ff3860 !important; 
+}
+
+.icon-invalid {
+    color: #ff3860 !important; 
+} 
+
+.email-valid {
+    border: 2px solid #09c372 !important;
+}
+
+.icon-valid {
+    color: #09c372 !important; 
+} 
+
+.email-error {
+    display: block;
+    color: red;
+    font-size: 12px;
+    margin-top: 4px; 
+    text-align: left;
+    padding-left: 95px;
+}
+
+
+.password-eye {
     position: absolute; 
     right: 103px;
     top: 50%;
