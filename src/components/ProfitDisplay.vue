@@ -4,15 +4,6 @@
 
     <table id="table" class="auto-index">
       <tr>
-        <!-- <th>S.No</th>
-        <th>Coin</th>
-        <th>Ticker</th>
-        <th>Buy_Price</th>
-        <th>Buy_Quantity</th>
-        <th>Current_Price</th>
-        <th>Profit</th>
-        <th>Options</th> -->
-
         <th>S/N</th>
         <th>Amount</th>
         <th>Category</th>
@@ -23,16 +14,14 @@
       <!-- Now the coin data to come from data property,'tablerows', instead of javascript -->
       <!-- We will not use insert Row and insertcell etc.. -->
       <!-- :key acts as a unique idenfier to create rows -->
-      <tr v-for="(row, index) in tableRows" :key="row.coin">
+      <tr v-for="(row, index) in tableRows" :key="row.documentId">
         <td>{{ index + 1 }}</td>
         <td>{{ row.amount }}</td>
         <td>{{ row.category }}</td>
         <td>{{ row.subcategory }}</td>
         <td>{{ row.date }}</td>
-        <!-- <td>{{ row.currentPrice }}</td>
-        <td>{{ row.profit }}</td> -->
         <td>
-          <button @click="deleteInstrument(row.coin, useremail)" class="bwt">Delete</button>
+          <button @click="deleteInstrument(row.documentId)" class="bwt">Delete</button>
         </td>
       </tr>
     </table>
@@ -78,48 +67,108 @@ export default {
       });
     },
 
+    findMonthYearByDocumentId(documentId) {
+    const entry = this.tableRows.find(row => row.documentId === documentId);
+    return entry ? entry.monthYear : null;  // returns the monthYear if found, else returns null
+    },
+
     async fetchAndUpdateData(useremail) {
-      const monthYear = this.getMonthYear()
-      let allDocuments = await getDocs(collection(db, String(this.useremail), "logs", monthYear));
-      console.log(allDocuments)
+      const months = [
+        "January ",
+        "February ",
+        "March ",
+        "April ",
+        "May ",
+        "June ",
+        "July ",
+        "August ",
+        "September ",
+        "October ",
+        "November ",
+        "December ",
+      ];
+      const allMonthEntries = doc(db, this.useremail, "logs");
+      const currDateTime = new Date();
+      var monthIter = "";
+      this.tableRows = []
       this.totalProfit = 0;
-      // Promise.all to ensure all async operations are over.
-      // allDocuments.docs.map(async (doc) to iterate over all documents and create arrays of promises
 
-      this.tableRows = await Promise.all(
-        allDocuments.docs.map(async (doc) => {
+      for (
+        let i = currDateTime.getMonth() + 1;
+        i < currDateTime.getMonth() + 13;
+        i++
+      ) {
+        if (i < 12) {
+          monthIter =
+            months[i] +
+            (parseInt(
+              currDateTime.toLocaleString("default", { year: "2-digit" })
+            ) -
+              1);
+        } else {
+          monthIter =
+            months[i - 12] +
+            currDateTime.toLocaleString("default", { year: "2-digit" });
+        }
+        let monthData = await getDocs(collection(allMonthEntries, monthIter));
+        console.log(monthData)
 
+        const newRows = await Promise.all(monthData.docs.map(async(doc) => {
           let documentData = doc.data();
 
           let amount = documentData.amount;
           let category = documentData.category;
           let subcategory = documentData.subcategory;
           let date = documentData.date;
+          let monthYear = monthIter;
+          const sanitizedDate = date.replace(/[-\/\s:]/g, '');
+          const sanitizedSubcat = subcategory.replace(/[\s\/]+/g, '_'); // Replace spaces and slashes with underscores
+          const documentId = `${amount}_${sanitizedDate}_${sanitizedSubcat}`;
 
           console.log("Amount ", amount, "Category: ", category, "Subcategory: ", subcategory, "Date: ", date)
-          this.totalExpenses += amount;
+          this.totalProfit += amount;
 
           return {
             amount,
             category,
             subcategory,
             date,
-            totalExpenses,
+            monthYear,
+            totalProfit,
+            documentId
           };
         }),
-      );
-    },
+      );  
+      this.tableRows = this.tableRows.concat(newRows)
+      console.log(this.tableRows)
+      }
+    },  
 
-    async deleteInstrument(coin, user) {
-      const monthYear = this.getMonthYear()
+    async deleteInstrument(documentId) {
+      // Retrieve the authentication state
+      const auth = getAuth();
+      if (!auth.currentUser) {
+        console.error("No user is currently logged in.");
+        return; // Stop execution if no user is logged in
+      }
 
-      alert("You are going to delete: " + coin);
-      await deleteDoc(doc(db, user, coin));
-      console.log("Document successfully deleted!", coin);
-      
-      // Refresh table data and total profit
-      await this.fetchAndUpdateData(this.useremail);
-    },
+      // Get the current user's email
+      const userEmail = auth.currentUser.email;
+
+      // Construct the document reference
+      try {
+        // Delete the document
+        const monthYear = this.findMonthYearByDocumentId(documentId)
+        await deleteDoc(doc(db, userEmail, "logs", monthYear, documentId));
+        console.log("Document successfully deleted!", documentId);
+
+        // Refresh the table data and total profit
+        await this.fetchAndUpdateData(this.useremail);
+      } catch (error) {
+        console.error("Error deleting document:", error);
+      }
+}
+
   },
 };
 </script>
