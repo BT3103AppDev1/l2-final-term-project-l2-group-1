@@ -89,7 +89,7 @@ export default {
         const docRef = await addDoc(
           collection(
             db,
-            auth.currentUser.uid,
+            auth.currentUser.email,
             "logs",
             this.getMonthYearOfEntry()
           ),
