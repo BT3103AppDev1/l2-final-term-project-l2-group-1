@@ -1,4 +1,4 @@
-<!-- <template>
+<template>
   <div style="text-align: center" v-if="user">
     <NavBar />
 
@@ -28,72 +28,6 @@ import {
   getFirestore,
 } from "firebase/firestore";
 import firebaseApp from "../firebase.js";
-const months = [
-  "January ",
-  "February ",
-  "March ",
-  "April ",
-  "May ",
-  "June ",
-  "July ",
-  "August ",
-  "September ",
-  "October ",
-  "November ",
-  "December ",
-];
-
-const currDateTime = new Date();
-const monthYear = currDateTime.toLocaleString("default", {
-  month: "long",
-  year: "2-digit",
-});
-const db = getFirestore(firebaseApp);
-const currUserId = getAuth().currentUser.uid;
-
-const currMonthEntries = await getDocs(
-  collection(db, currUserId, "logs", monthYear)
-);
-const pie = {};
-currMonthEntries.forEach((doc) => {
-  if (doc.data().category in pie) {
-    pie[doc.data().category] += parseInt(doc.data().amount);
-  } else {
-    pie[doc.data().category] = parseInt(doc.data().amount);
-  }
-});
-
-const allMonthEntries = doc(db, currUserId, "logs");
-const col = {};
-var monthIter = "";
-var monthTotal = 0;
-var monthData;
-var hasEntries = false;
-
-for (
-  let i = currDateTime.getMonth() + 1;
-  i < currDateTime.getMonth() + 13;
-  i++
-) {
-  monthTotal = 0;
-  hasEntries = false;
-  if (i < 12) {
-    monthIter =
-      months[i] +
-      (parseInt(currDateTime.toLocaleString("default", { year: "2-digit" })) -
-        1);
-  } else {
-    monthIter =
-      months[i - 12] +
-      currDateTime.toLocaleString("default", { year: "2-digit" });
-  }
-  const monthData = await getDocs(collection(allMonthEntries, monthIter));
-  monthData.forEach((doc) => {
-    hasEntries = true;
-    monthTotal += parseInt(doc.data().amount);
-  });
-  col[monthIter] = monthTotal;
-}
 
 export default {
   name: "About",
@@ -106,10 +40,90 @@ export default {
   data() {
     return {
       user: false,
-      mmyy: monthYear,
-      pieData: pie,
-      colData: col,
+      mmyy: "",
+      pieData: {},
+      colData: {},
     };
+  },
+
+  methods: {
+    getMonthYear() {
+      const currDateTime = new Date();
+      return currDateTime.toLocaleString("default", {
+        month: "long",
+        year: "2-digit",
+      });
+    },
+
+    async setPieData(uid) {
+      const db = getFirestore(firebaseApp);
+      const monthYear = this.getMonthYear();
+      const pie = {};
+      const currMonthEntries = await getDocs(
+        collection(db, uid, "logs", monthYear)
+      );
+      this.pieData = {};
+      currMonthEntries.forEach((doc) => {
+        if (doc.data().category in pie) {
+          pie[doc.data().category] += parseInt(doc.data().amount);
+        } else {
+          pie[doc.data().category] = parseInt(doc.data().amount);
+        }
+      });
+      this.pieData = pie;
+    },
+
+    async setColData(uid) {
+      const months = [
+        "January ",
+        "February ",
+        "March ",
+        "April ",
+        "May ",
+        "June ",
+        "July ",
+        "August ",
+        "September ",
+        "October ",
+        "November ",
+        "December ",
+      ];
+      const db = getFirestore(firebaseApp);
+      const allMonthEntries = doc(db, uid, "logs");
+      const currDateTime = new Date();
+      const col = {};
+      var monthIter = "";
+      var monthTotal = 0;
+      var hasEntries = false;
+
+      for (
+        let i = currDateTime.getMonth() + 1;
+        i < currDateTime.getMonth() + 13;
+        i++
+      ) {
+        monthTotal = 0;
+        hasEntries = false;
+        if (i < 12) {
+          monthIter =
+            months[i] +
+            (parseInt(
+              currDateTime.toLocaleString("default", { year: "2-digit" })
+            ) -
+              1);
+        } else {
+          monthIter =
+            months[i - 12] +
+            currDateTime.toLocaleString("default", { year: "2-digit" });
+        }
+        const monthData = await getDocs(collection(allMonthEntries, monthIter));
+        monthData.forEach((doc) => {
+          hasEntries = true;
+          monthTotal += parseInt(doc.data().amount);
+        });
+        col[monthIter] = monthTotal;
+      }
+      this.colData = col;
+    },
   },
 
   mounted() {
@@ -117,6 +131,9 @@ export default {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         this.user = user;
+        this.mmyy = this.getMonthYear();
+        this.setPieData(user.uid);
+        this.setColData(user.uid);
       }
     });
   },
@@ -142,22 +159,4 @@ export default {
 #bar-container {
   width: 50%;
 }
-</style> -->
-
-<template>
-  <div style="text-align:center;">
-      <NavBar/>
-      <h3>This is an About Page</h3>
-      <h2>Welcome to CPP</h2>
-      <h3>Crypto Paper Portfolio (CPP) is an app to track your crypto portfolio.
-          <br> This is just a demo version and is made for learning purposes. Please use accordingly. <br><br>
-      </h3>
-      <LogOut/> <br><br>
-  </div>
-</template>
-
-<script>
-export default {
-  name: "About",
-}
-</script>
+</style>
