@@ -39,7 +39,7 @@
     <br />
     <br />
 
-    <h2 id="totalProfit"> Total Profit is : {{ totalProfit }} USD</h2>
+    <h2 id="totalProfit"> Total Expenses for Current Month : {{ totalProfit }} USD</h2>
   </div>
 </template>
 
@@ -48,7 +48,6 @@
 import firebaseApp from '../firebase.js';
 import { getFirestore } from 'firebase/firestore';
 import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
-import ccxt from 'ccxt';
 import { getAuth } from 'firebase/auth';
 
 const db = getFirestore(firebaseApp);
@@ -71,8 +70,17 @@ export default {
   },
 
   methods: {
+    getMonthYear() {
+      const currDateTime = new Date();
+      return currDateTime.toLocaleString("default", {
+        month: "long",
+        year: "2-digit",
+      });
+    },
+
     async fetchAndUpdateData(useremail) {
-      let allDocuments = await getDocs(collection(db, String(this.useremail)));
+      const monthYear = this.getMonthYear()
+      let allDocuments = await getDocs(collection(db, String(this.useremail), "logs", monthYear));
       console.log(allDocuments)
       this.totalProfit = 0;
       // Promise.all to ensure all async operations are over.
@@ -83,26 +91,28 @@ export default {
 
           let documentData = doc.data();
 
-          let amount = documentData.Amount;
-          let category = documentData.Category;
-          let subcategory = documentData.Subcategory;
-          let date = documentData.Date;
+          let amount = documentData.amount;
+          let category = documentData.category;
+          let subcategory = documentData.subcategory;
+          let date = documentData.date;
 
           console.log("Amount ", amount, "Category: ", category, "Subcategory: ", subcategory, "Date: ", date)
-          this.totalProfit += amount;
+          this.totalExpenses += amount;
 
           return {
             amount,
             category,
             subcategory,
             date,
-            totalProfit,
+            totalExpenses,
           };
         }),
       );
     },
 
     async deleteInstrument(coin, user) {
+      const monthYear = this.getMonthYear()
+
       alert("You are going to delete: " + coin);
       await deleteDoc(doc(db, user, coin));
       console.log("Document successfully deleted!", coin);
