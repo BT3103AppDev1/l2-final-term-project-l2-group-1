@@ -224,7 +224,7 @@ export default {
           const documentRef = doc(db, this.useremail, "logs", oldMonthYear, this.editingDocumentId);
           const documentRefId = documentRef.id;
           await setDoc(documentRef, {
-            documentId: documentRef.id,
+            documentId: documentRefId,
             amount: this.amt,
             category: this.cat,
             date: this.date,
