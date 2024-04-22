@@ -20,15 +20,27 @@
                 <form @submit.prevent="registerUser">
                     <div class="input-container">
                         <div class="input-wrapper">
-                            <input type="email" v-model="email" @input="validateEmail" :class="{'email-invalid': emailError, 'email-valid': isEmailValid && email}" placeholder="Email" required>
-                            <i class='bx bx-envelope' :class="{'icon-invalid': emailError, 'icon-valid': isEmailValid && email}"></i>
+                            <input type="email" v-model="email" @input="validateEmail" :class="{'email-invalid': emailError, 'email-valid': emailValid && email}" placeholder="Email" required>
+                            <i class='bx bx-envelope' :class="{'icon-invalid': emailError, 'icon-valid': emailValid && email}"></i>
                         </div>
                         <span class="email-error" v-if="emailError">{{ emailError }}</span>
+                        <span class="email-success" v-if="emailValid && !emailError">Email address is valid!</span>
                     </div>
-                    <div class="input-container">
+                    <div class="input-container" :class="{ 'input-wrapper-focused': passwordFocused }">
                         <div class="input-wrapper">
-                            <input type="text" v-model="password" placeholder="Password" required>
-                            <i class='bx bxs-lock-alt'></i>
+                            <input type="text" v-model="password" placeholder="Password" @focus="focusPassword" @blur="blurPassword" required :class="{'password-invalid': !passwordValid && passwordFilled, 'password-valid': passwordValid}">
+                            <i class='bx bxs-lock-alt' :class="{'icon-invalid': !passwordValid && passwordFilled, 'icon-valid': passwordValid}"></i>
+                        </div>
+                        <span class="password-error" v-if="!passwordValid && passwordFilled && !passwordFocused">Password does not match required complexity</span>
+                        <span class="password-success" v-if="passwordValid && passwordFilled && !passwordFocused">Password is valid!</span>
+                        <div class="password-checklist">
+                            <p>Password complexity</p>
+                            <ul>
+                                <li :class="getClassForCondition('minCharacter')">At least 8 characters</li>
+                                <li :class="getClassForCondition('number')">At least 1 number</li>
+                                <li :class="getClassForCondition('uppercase')">At least 1 uppercase character</li>
+                                <li :class="getClassForCondition('specialChar')">At least 1 special character</li>
+                            </ul>
                         </div>
                     </div>
                     <button type="submit" class="register-button">Register</button>
@@ -51,9 +63,20 @@ export default {
         return {
             username: '',
             email: '',
-            emailError: null, // For email validation
-            isEmailValid: true, // For email validation
+            // For email validation
+            emailError: null, 
+            emailValid: false, 
             password: '',
+            // For password validation
+            passwordFocused: false, 
+            passwordFilled: false,
+            passwordConditions: {
+                minCharacter: false,
+                number: false,
+                uppercase: false,
+                specialChar: false
+            },
+            passwordValid: false,
             auth: getAuth(firebaseApp),
             db: getFirestore(firebaseApp)
         }
@@ -61,9 +84,14 @@ export default {
 
     methods: {
         async registerUser() {
-            // For checking password complexity
-            if (!this.checkPassword(this.password)) {
-                return alert("Password does not match required complexity");
+            if (!this.emailValid) {
+                alert("Please enter a valid email address");
+                return;
+            }
+
+            if (!this.passwordValid) {
+                alert("Password does not match required complexity");
+                return;
             }
 
             try {                
@@ -78,7 +106,7 @@ export default {
                 // Let firebase check for duplicate email
                 if (error.code === 'auth/email-already-in-use') {
                     this.emailError = "Email is already registered";
-                    this.isEmailValid = false;
+                    this.emailValid = false;
                 } else {
                     console.error("Registration unsuccessful:", error);
                     alert(error.message);
@@ -89,23 +117,65 @@ export default {
         validateEmail() {
             const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,3}))$/;
             if (!this.email) {
-                this.isEmailValid = false;
+                this.emailValid = false;
                 this.emailError = null;
             } else if (emailRegex.test(this.email)) {
-                this.isEmailValid = true;
+                this.emailValid = true;
                 this.emailError = null;
             } else {
-                this.isEmailValid = false;
+                this.emailValid = false;
                 this.emailError = "Please enter a valid email address";
             }
         },
 
+        // Validate password for error alert
         checkPassword(password) {
-            // Password should be at least 8 characters consisting of at least 1 capital letter and 1 special character
+            // Password should be at least 8 characters consisting of at least 1 number, 1 capital letter and 1 special character
             const complexityRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
             return complexityRegex.test(password);
+        },
+
+        // To handle case where user clicks in the password input field
+        focusPassword() {
+            this.passwordFocused = true;
+        },
+
+        // To handle case where user clicks out of the password input field
+        blurPassword() {
+            this.passwordFocused = false;
+            this.passwordFilled = this.password.trim() !== ''; // If password field is not empty, we set state as filed
+        },
+
+        // Check updated password conditions and change display
+        getClassForCondition(condition) {
+            return {
+                'valid-condition': this.passwordConditions[condition],
+                'bx': true,
+                'bx-check': this.passwordConditions[condition],
+                'bx-x': !this.passwordConditions[condition]
+            }
+        },
+
+        // Checks if all the password conditions are met
+        checkAllConditionsMet() {
+            return this.passwordConditions.minCharacter &&
+                this.passwordConditions.number &&
+                this.passwordConditions.uppercase &&
+                this.passwordConditions.specialChar;
+        },
+    },
+
+    // Check and update password conditions
+    watch: {
+        password(input) {
+            this.passwordConditions.minCharacter = input.length >= 8;
+            this.passwordConditions.number = /[0-9]/.test(input);
+            this.passwordConditions.uppercase = /[A-Z]/.test(input);
+            this.passwordConditions.specialChar = /[!@#$%^&*(),.?":{}|<>]/.test(input);
+            this.passwordValid = this.checkAllConditionsMet();
+            this.passwordFilled = input.trim() !== '';
         }
-    }
+    },
 };
 </script>
 
@@ -220,7 +290,7 @@ export default {
 }  
 
 input[type=email], input[type=text] {
-    width: 70% ; 
+    width: 70%; 
     padding: 15px 15px 15px 35px; 
     margin: 0; 
     border: 1px solid #ccc;
@@ -239,23 +309,6 @@ input[type='email']:focus + i, input[type='text']:focus + i {
     color: #8414EC;
 }
 
-/* Email validation styles should override focus styles */
-.email-invalid {
-    border: 2px solid #ff3860 !important; 
-}
-
-.icon-invalid {
-    color: #ff3860 !important; 
-} 
-
-.email-valid {
-    border: 2px solid #09c372 !important;
-}
-
-.icon-valid {
-    color: #09c372 !important; 
-} 
-
 .email-error {
     display: block;
     color: red;
@@ -264,6 +317,104 @@ input[type='email']:focus + i, input[type='text']:focus + i {
     text-align: left;
     padding-left: 95px;
 }
+
+.email-success {
+    display: block;
+    color: #09c372; 
+    font-size: 12px;
+    margin-top: 4px;
+    text-align: left;
+    padding-left: 95px;
+}
+
+.password-checklist {
+    position: absolute;
+    font-size: 14px;
+    padding: 20px 15px;
+    margin: 30px 0px -35px 89px;
+    top: 10px;
+    text-align: left;
+    width: 70%; 
+}
+
+.password-checklist p {
+    margin-bottom: 5px;
+    margin-left: 3px;
+    font-weight: bold;
+}
+
+.password-checklist ul {
+    list-style: none;
+    padding: 0px;
+}
+
+.password-checklist li {
+    display: block;
+    color: #ff3860;  
+    position: relative; 
+    line-height: 1.5;
+}
+
+.password-checklist li::before {
+    font-weight: bold;
+    display: inline-block; 
+    width: 16px;
+    transform: translateY(8%); 
+}
+
+/* For showing and hiding password checklist */
+.input-wrapper-focused .password-checklist {
+    display: block;
+}
+
+.password-checklist {
+    display: none;
+}
+
+.input-wrapper-focused ~ .register-button,
+.input-wrapper-focused ~ .login-text {
+    transform: translateY(90px); 
+    transition: transform 0.25s ease-in-out;
+}
+
+.password-checklist li.valid-condition {
+    color: #09c372; 
+}
+
+.password-error {
+    display: block;
+    color: #ff3860; 
+    font-size: 12px;
+    margin-top: 4px;
+    text-align: left;
+    padding-left: 95px;
+}
+
+.password-success {
+    display: block;
+    color: #09c372;
+    font-size: 12px;
+    margin-top: 4px;
+    text-align: left;
+    padding-left: 95px;
+}
+
+/* Email and password validation styles should override focus styles */
+.email-invalid, .password-invalid {
+    border: 2px solid #ff3860 !important; 
+}
+
+.icon-invalid {
+    color: #ff3860 !important; 
+} 
+
+.email-valid, .password-valid {
+    border: 2px solid #09c372 !important;
+}
+
+.icon-valid {
+    color: #09c372 !important; 
+} 
 
 .register-button {
     width: 70%;

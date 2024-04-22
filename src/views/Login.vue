@@ -18,10 +18,11 @@
                 <form @submit.prevent="loginWithEmail">
                     <div class="input-container">
                         <div class="input-wrapper">
-                            <input type="email" v-model="email" @input="validateEmail" :class="{'email-invalid': emailError, 'email-valid': isEmailValid && email}" placeholder="Email" required>
-                            <i class='bx bx-envelope' :class="{'icon-invalid': emailError, 'icon-valid': isEmailValid && email}"></i>
+                            <input type="email" v-model="email" @input="validateEmail" :class="{'email-invalid': emailError, 'email-valid': emailValid && email}" placeholder="Email" required>
+                            <i class='bx bx-envelope' :class="{'icon-invalid': emailError, 'icon-valid': emailValid && email}"></i>
                         </div>
                         <span class="email-error" v-if="emailError">{{ emailError }}</span>
+                        <span class="email-success" v-if="emailValid && !emailError">Email address is valid!</span>
                     </div>
                     <div class="input-container">
                         <input :type="showPassword ? 'text':'password'" v-model="password" placeholder="Password" required>
@@ -53,11 +54,13 @@ export default {
         return {
             email: '',
             password: '',
-            emailError: null, // For email validation
-            isEmailValid: true, // For email validation
-            showPassword: false, // For password display
-            eyeCloseIcon: eyeClose, // For password display
-            eyeOpenIcon: eyeOpen, // For password display
+            // For email validation
+            emailError: null, 
+            emailValid: false, 
+            // For password display
+            showPassword: false, 
+            eyeCloseIcon: eyeClose, 
+            eyeOpenIcon: eyeOpen, 
             auth: getAuth(firebaseApp),
             db: getFirestore(firebaseApp)
         }
@@ -67,13 +70,13 @@ export default {
         validateEmail() {
             const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,3}))$/;
             if (!this.email) {
-                this.isEmailValid = false;
+                this.emailValid = false;
                 this.emailError = null;
             } else if (emailRegex.test(this.email)) {
-                this.isEmailValid = true;
+                this.emailValid = true;
                 this.emailError = null;
             } else {
-                this.isEmailValid = false;
+                this.emailValid = false;
                 this.emailError = "Please enter a valid email address";
             }
         },
@@ -91,7 +94,7 @@ export default {
             this.$router.push('/home');
 
             } catch (error) {
-            alert("Incorrect email / password");
+                alert("Incorrect email / password");
             }
         },
 
@@ -275,6 +278,15 @@ input[type='email']:focus + i, input[type='text']:focus + i {
     padding-left: 95px;
 }
 
+.email-success {
+    display: block;
+    color: #09c372; 
+    font-size: 12px;
+    margin-top: 4px;
+    text-align: left;
+    padding-left: 95px;
+}
+
 .password-eye {
     position: absolute; 
     right: 103px;
@@ -330,7 +342,7 @@ button:hover {
 
 .signup-text {
     text-align: center;
-    margin-top: 5px;
+    margin-top: 10px;
 }
 
 </style>
