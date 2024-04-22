@@ -2,6 +2,14 @@
   <div>
     <h1 id="Current">Logbook!</h1>
 
+    <div>
+      <label for="startMonth">Start Month:</label>
+      <input type="month" id="startMonth" v-model="startMonth">
+      <label for="endMonth">End Month:</label>
+      <input type="month" id="endMonth" v-model="endMonth">
+      <button @click="fetchAndUpdateData(useremail)">Filter</button>
+    </div>
+
     <table id="table" class="auto-index">
       <tr>
         <th>S/N</th>
@@ -22,13 +30,43 @@
         <td>{{ row.date }}</td>
         <td>
           <button @click="deleteInstrument(row.documentId)" class="bwt">Delete</button>
+          <button @click="editInstrument(row)" class="edit">Edit</button>
         </td>
       </tr>
     </table>
+
     <br />
     <br />
 
     <h2 id="totalProfit"> Total Expenses for Current Month : {{ totalProfit }} USD</h2>
+
+    <div v-if="isEditing">
+      <form @submit.prevent="updateDocument">
+        <input type="number" v-model="amt" placeholder="Amount" />
+        <select v-model="cat">
+          <option disabled value="">Please select a category</option>
+          <option value="Mortgage or rent">Mortgage or rent</option>
+          <option value="Food">Food</option>
+          <option value="Transportation">Transportation</option>
+          <option value="Utilities">Utilities</option>
+          <option value="Subscriptions">Subscriptions</option>
+          <option value="Personal expenses">Personal expenses</option>
+          <option value="Savings and investments">
+            Savings and investments
+          </option>
+          <option value="Debt or student loan payments">
+            Debt or student loan payments
+          </option>
+          <option value="Health care">Health care</option>
+          <option value="Miscellaneous expenses">Miscellaneous expenses</option>
+        </select>
+        <input type="text" v-model="subcat" placeholder="Subcategory" />
+        <input type="date" v-model="date" placeholder="Date" />
+        <button type="submit">Save Changes</button>
+        <button @click="clearForm">Cancel</button>
+      </form>
+    </div>
+
   </div>
 </template>
 
@@ -36,7 +74,7 @@
 
 import firebaseApp from '../firebase.js';
 import { getFirestore } from 'firebase/firestore';
-import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, deleteDoc, setDoc} from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
 const db = getFirestore(firebaseApp);
@@ -47,6 +85,14 @@ export default {
       useremail: '',
       tableRows: [],
       totalProfit: 0,
+      amt: "",
+      cat: "",
+      subcat: "",
+      date: "",
+      editingDocumentId: null,
+      isEditing: false,
+      startMonth: '',
+      endMonth: ''
     };
   },
 
@@ -59,13 +105,6 @@ export default {
   },
 
   methods: {
-    getMonthYear() {
-      const currDateTime = new Date();
-      return currDateTime.toLocaleString("default", {
-        month: "long",
-        year: "2-digit",
-      });
-    },
 
     findMonthYearByDocumentId(documentId) {
     const entry = this.tableRows.find(row => row.documentId === documentId);
@@ -73,77 +112,52 @@ export default {
     },
 
     async fetchAndUpdateData(useremail) {
-      const months = [
-        "January ",
-        "February ",
-        "March ",
-        "April ",
-        "May ",
-        "June ",
-        "July ",
-        "August ",
-        "September ",
-        "October ",
-        "November ",
-        "December ",
-      ];
-      const allMonthEntries = doc(db, this.useremail, "logs");
-      const currDateTime = new Date();
-      var monthIter = "";
-      this.tableRows = []
+      this.tableRows = [];  // Clear current data
       this.totalProfit = 0;
 
-      for (
-        let i = currDateTime.getMonth() + 1;
-        i < currDateTime.getMonth() + 13;
-        i++
-      ) {
-        if (i < 12) {
-          monthIter =
-            months[i] +
-            (parseInt(
-              currDateTime.toLocaleString("default", { year: "2-digit" })
-            ) -
-              1);
-        } else {
-          monthIter =
-            months[i - 12] +
-            currDateTime.toLocaleString("default", { year: "2-digit" });
-        }
-        let monthData = await getDocs(collection(allMonthEntries, monthIter));
-        console.log(monthData)
+      let startDate, endDate;
+      // Check if both start and end months are provided
+      if (this.startMonth && this.endMonth) {
+        startDate = new Date(this.startMonth + '-01'); // Start of the start month
+        endDate = new Date(this.endMonth + '-01');
+        endDate.setMonth(endDate.getMonth() + 1);
+        endDate.setDate(endDate.getDate() - 1); // End of the end month
+      }
 
-        const newRows = await Promise.all(monthData.docs.map(async(doc) => {
+      // Loop through the months of the current year or the filtered range
+      const startLoopDate = startDate || new Date(new Date().getFullYear(), 0, 1);  // Start from January of the current year if no filter is set
+      const endLoopDate = endDate || new Date(new Date().getFullYear(), 11, 31);  // End at December of the current year if no filter is set
+
+      for (let d = new Date(startLoopDate); d <= endLoopDate; d.setMonth(d.getMonth() + 1)) {
+        let monthYear = this.getMonthYearFromDate(d);
+        let monthData = await getDocs(collection(db, this.useremail, "logs", monthYear));
+        
+        monthData.docs.forEach(doc => {
           let documentData = doc.data();
+          let docDate = new Date(documentData.date);
+          // Filter by date range if both start and end dates are set
+          if (!startDate || (docDate >= startDate && docDate <= endDate)) {
+            let amount = documentData.amount;
+            let category = documentData.category;
+            let subcategory = documentData.subcategory;
+            let date = documentData.date;
+            let documentId = documentData.documentId;
 
-          let amount = documentData.amount;
-          let category = documentData.category;
-          let subcategory = documentData.subcategory;
-          let date = documentData.date;
-          let monthYear = monthIter;
-          const sanitizedDate = date.replace(/[-\/\s:]/g, '');
-          const sanitizedSubcat = subcategory.replace(/[\s\/]+/g, '_'); // Replace spaces and slashes with underscores
-          const documentId = `${amount}_${sanitizedDate}_${sanitizedSubcat}`;
-
-          console.log("Amount ", amount, "Category: ", category, "Subcategory: ", subcategory, "Date: ", date)
-          this.totalProfit += amount;
-
-          return {
-            amount,
-            category,
-            subcategory,
-            date,
-            monthYear,
-            totalProfit,
-            documentId
-          };
-        }),
-      );  
-      this.tableRows = this.tableRows.concat(newRows)
-      //console.log(this.tableRows)
+            this.tableRows.push({
+              amount,
+              category,
+              subcategory,
+              date,
+              monthYear,
+              totalProfit: this.totalProfit += amount,
+              documentId
+            });
+          }
+        });
       }
       this.tableRows.sort((a, b) => new Date(b.date) - new Date(a.date));
-    },  
+    },
+         
 
     async deleteInstrument(documentId) {
       // Retrieve the authentication state
@@ -168,7 +182,86 @@ export default {
       } catch (error) {
         console.error("Error deleting document:", error);
       }
-}
+    },
+
+    async editInstrument(row) {
+      this.amt = row.amount;
+      this.cat = row.category;
+      this.subcat = row.subcategory;
+      this.date = row.date;
+      this.editingDocumentId = row.documentId; 
+      this.isEditing = true; // Toggle editing state, form for editing pops up
+    },
+
+    async updateDocument() {
+      if (!this.editingDocumentId) {
+        console.error("No document selected for editing.");
+        return;
+      }
+
+      const newMonthYear = this.getMonthYearFromDateString(this.date); 
+      const oldMonthYear = this.findMonthYearByDocumentId(this.editingDocumentId);
+
+      try {
+        // If the month/year has changed, move the document to the new collection
+        if (newMonthYear !== oldMonthYear) {
+          // Create new document in the new collection
+          const newDocRef = doc(collection(db, this.useremail, "logs", newMonthYear));
+          const newDocRefId = newDocRef.id;
+          await setDoc(newDocRef, {
+            documentId: newDocRefId,
+            amount: this.amt,
+            category: this.cat,
+            date: this.date,
+            subcategory: this.subcat
+          });
+
+          // Delete the old document
+          const oldDocRef = doc(db, this.useremail, "logs", oldMonthYear, this.editingDocumentId);
+          await deleteDoc(oldDocRef);
+        } else {
+          // Update the document in the same collection
+          const documentRef = doc(db, this.useremail, "logs", oldMonthYear, this.editingDocumentId);
+          const documentRefId = documentRef.id;
+          await setDoc(documentRef, {
+            documentId: documentRef.id,
+            amount: this.amt,
+            category: this.cat,
+            date: this.date,
+            subcategory: this.subcat
+          }, { merge: true });
+        }
+
+        console.log("Document updated successfully.");
+        this.clearForm();
+        await this.fetchAndUpdateData(this.useremail);
+      } catch (error) {
+        console.error("Error updating document:", error);
+      }
+    },
+
+    // Helper method to derive MonthYear from a date string
+    getMonthYearFromDateString(dateStr) {
+      const date = new Date(dateStr);
+      return this.getMonthYearFromDate(date);
+    },
+
+    getMonthYearFromDate(date) {
+      const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      const year = date.getFullYear().toString().substr(-2); // Get last two digits of the year
+      const month = monthNames[date.getMonth()];
+      return `${month} ${year}`;
+    },
+
+
+    clearForm() {
+      this.amt = '';
+      this.cat = '';
+      this.subcat = '';
+      this.date = '';
+      this.editingDocumentId = null;
+      this.isEditing = false;
+    },
 
   },
 };
@@ -219,6 +312,11 @@ th,td {
 .bwt{
     color:rgb(243, 236, 236);
     background-color: rgb(255, 94, 0);
+}
+
+.edit {
+  background-color: blue;
+  color: white;
 }
 
 </style>
