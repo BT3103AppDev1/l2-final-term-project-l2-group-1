@@ -17,7 +17,7 @@ export default {
 
 .WelcomeToFinWise {
   place-items: center;
-  min-height: 1000px;
+  min-height: 880px;
   display: grid;
   position: relative;
   background-image: url('@/assets/Homebackground.png');
@@ -34,7 +34,7 @@ export default {
 
 #Welcome {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
-  --parallax-speed: -20;
+  --parallax-speed: -10;
   z-index: 2;
   font-size: 60px;
   color: #740CCC;

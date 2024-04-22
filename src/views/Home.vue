@@ -1,10 +1,15 @@
 <template>
   <div id ="background-container">
+    <div class="header-container">
+                <h1 class="header-text">FinWise</h1>
+                <img class="logo" src="@/assets/Logo.jpg">
+    </div>
     <div style="text-align:center;" v-if="user">
-     <NavBar/>
-     <WelcomeCpp/>
-     <AddCoin  @added="change" />
-     <TotalAmount/>
+      <div class="Parallax"></div>
+        <div class="NavBarComp"><NavBar/></div>
+        <div class="WelcomeComp"><WelcomeCpp/></div>
+        <div class="AddCoinComp"><AddCoin  @added="change" /></div>
+        <div  class="TotalComp"><TotalAmount/></div>
       <!-- <ProfitDisplay :key="refreshComp" /> -->
     
      <LogOut/>
@@ -61,4 +66,57 @@ export default {
 #background-container { 
   background-color: rgb(255, 255, 255);
 } 
+
+.header-container {
+    display: flex; 
+    align-items: center; 
+    justify-content: flex-start; 
+    grid-column: 1 / -1; 
+    grid-row: 1;
+    width: 100%;
+    text-align: left;
+}
+
+.header-text {
+    display: inline-block; 
+    font-size: 20px;
+    color: #4116b7; 
+    margin-top: 20px;
+}
+
+.logo {
+    height: 35px; 
+    width: auto;
+    margin-top: 10px;
+    margin-left: 3px; 
+}
+
+/* .Parallax {
+  display: grid;
+  place-items: center;
+  min-height: 2000px;
+  position: relative;
+}
+
+.Parallax > * {
+  grid-area: auto;
+  animation: parallax linear;
+  animation-timeline: scroll();
+}
+
+.WelcomeComp {
+  z-index: 1;
+  --parallax-speed: 0;
+}
+
+.AddCoinComp {
+  z-index: 2;
+  --parallax-speed: -20;
+}
+
+@keyframes parallax {
+  to {
+    transform: translateY(calc(var(--parallax-speed) * 100px));
+  }
+} */
 </style>

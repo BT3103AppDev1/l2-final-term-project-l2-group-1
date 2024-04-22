@@ -1,9 +1,14 @@
 <template>
-  <div style="text-align: center" v-if="user">
+  <div class="header-container">
+    <h1 class="header-text">FinWise</h1>
+    <img class="logo" src="@/assets/Logo.jpg">
+  </div>
+  <div class = "main" style="text-align: center" v-if="user">
     <NavBar />
 
-    <h2>FinWise</h2>
-    <h3>My spending for {{ mmyy }}.</h3>
+    <div class="Main">
+    <!-- <h2 id="Header">FinWise</h2> -->
+    <div id="mySpending">My spending for {{ mmyy }}.</div>
     <div id="graph-container">
       <div id="pie-container">
         <pie-chart class="user" :data="pieData"></pie-chart>
@@ -11,6 +16,7 @@
       <div id="bar-container">
         <column-chart class="user" :data="colData"></column-chart>
       </div>
+    </div>
     </div>
     <LogOut /> <br /><br />
   </div>
@@ -135,6 +141,14 @@ export default {
 </script>
 
 <style scoped>
+#mySpending {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-weight: 1000;
+  color: #740CCC;
+  font-size: 50px;
+  text-shadow: 3px 3px rgb(205, 205, 205);
+}
+
 .about {
   text-align: left;
   border: 2px solid black;
@@ -152,5 +166,37 @@ export default {
 
 #bar-container {
   width: 50%;
+}
+
+.header-container {
+    display: flex; 
+    align-items: center; 
+    justify-content: flex-start; 
+    grid-column: 1 / -1; 
+    grid-row: 1;
+    width: 100%;
+    text-align: left;
+}
+
+.header-text {
+    display: inline-block; 
+    font-size: 20px;
+    color: #4116b7; 
+    margin-top: 20px;
+}
+
+.logo {
+    height: 35px; 
+    width: auto;
+    margin-top: 10px;
+    margin-left: 3px; 
+}
+
+.Main {
+  background-image: url("@/assets/AboutBackground.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: top;
+  min-height: 850px;
 }
 </style>

@@ -160,6 +160,10 @@ select {
   box-sizing: border-box;
 }
 
+.save {
+  background-color: white;
+}
+
 #savebutton {
   width: 40%;
   padding: 15px;
@@ -174,7 +178,7 @@ select {
 }
 
 #savebutton:hover {
-  background-color: #4f339c;
+  /* background-color: #4f339c; */
   box-shadow: 3px 3px grey 
 }
 </style>
