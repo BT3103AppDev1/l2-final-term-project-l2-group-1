@@ -38,7 +38,7 @@
     <br />
     <br />
 
-    <h2 id="totalProfit"> Total Expenses for Current Month : {{ totalProfit }} USD</h2>
+    <h2 id="totalProfit"> Total Expenses: {{ totalProfit }} USD</h2>
 
     <div v-if="isEditing">
       <form @submit.prevent="updateDocument">
