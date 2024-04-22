@@ -46,7 +46,7 @@
 <script>
 import firebaseApp from "../firebase.js";
 import { getFirestore } from "firebase/firestore";
-import { setDoc, doc } from "firebase/firestore";
+import { setDoc, doc, collection } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 const db = getFirestore(firebaseApp);
 
@@ -94,14 +94,12 @@ export default {
       console.log(this.getMonthYearOfEntry());
       
       try {
-      const sanitizedDate = this.date.replace(/[-\/\s:]/g, '');
-      const sanitizedSubcat = this.subcat.replace(/[\s\/]+/g, '_'); // Replace spaces and slashes with underscores
+      const docRef = doc(collection(db, userEmail, "logs", this.getMonthYearOfEntry()));
+      const newDocId = docRef.id;
 
-      const customDocId = `${this.amt}_${sanitizedDate}_${sanitizedSubcat}`;
-
-        await setDoc(
-          doc(db, userEmail, "logs", this.getMonthYearOfEntry(), customDocId),
+        await setDoc(docRef,
           {
+            documentId: newDocId,
             amount: this.amt,
             category: this.cat,
             date: this.date,
@@ -109,7 +107,7 @@ export default {
           }
         );
 
-        console.log("Document written with ID: ", customDocId);
+        console.log("Document written with ID: ", newDocId);
         this.amt = "";
         this.cat = "";
         this.subcat = "";
@@ -130,9 +128,7 @@ export default {
   color: #4116b7;
   font-size: 45px;
   text-shadow: 3px 3px rgb(205, 205, 205);
-
-}
-
+ }
 .container {
   max-width: 600px; /* Or whatever maximum width you prefer */
   margin: auto; /* Center the container */
@@ -181,5 +177,4 @@ select {
   background-color: #4f339c;
   box-shadow: 3px 3px grey 
 }
-
 </style>

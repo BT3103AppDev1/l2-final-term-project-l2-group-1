@@ -3,8 +3,8 @@
 
     <div class="container">
         <div class="header-container">
-                <h1 class="header-text">FinWise</h1>
-                <img class="logo" src="@/assets/Logo.jpg">
+            <h1 class="header-text">FinWise</h1>
+            <img class="logo" src="@/assets/Logo.jpg">
         </div>
 
         <div class="image-container">
@@ -18,23 +18,30 @@
                 <form @submit.prevent="loginWithEmail">
                     <div class="input-container">
                         <div class="input-wrapper">
-                            <input type="email" v-model="email" @input="validateEmail" :class="{'email-invalid': emailError, 'email-valid': isEmailValid && email}" placeholder="Email" required>
-                            <i class='bx bx-envelope' :class="{'icon-invalid': emailError, 'icon-valid': isEmailValid && email}"></i>
+                            <input type="email" v-model="email" @input="validateEmail"
+                                :class="{ 'email-invalid': emailError, 'email-valid': emailValid && email }"
+                                placeholder="Email" required>
+                            <i class='bx bx-envelope'
+                                :class="{ 'icon-invalid': emailError, 'icon-valid': emailValid && email }"></i>
                         </div>
                         <span class="email-error" v-if="emailError">{{ emailError }}</span>
+                        <span class="email-success" v-if="emailValid && !emailError">Email address is valid!</span>
                     </div>
                     <div class="input-container">
-                        <input :type="showPassword ? 'text':'password'" v-model="password" placeholder="Password" required>
+                        <input :type="showPassword ? 'text' : 'password'" v-model="password" placeholder="Password"
+                            required>
                         <i class='bx bxs-lock-alt'></i>
-                        <span @click="showHidePassword"><img class="password-eye" :src="showPassword ? eyeOpenIcon : eyeCloseIcon"></span>
+                        <span @click="showHidePassword"><img class="password-eye"
+                                :src="showPassword ? eyeOpenIcon : eyeCloseIcon"></span>
                     </div>
-                        <!-- Change a tag to router link to forgot password page -->
-                        <a class="forgot-password" href="#">Forgot Password?</a> 
+                    <!-- Change a tag to router link to forgot password page -->
+                    <a class="forgot-password" @click="forgotPassword">Forgot Password?</a>
                     <button type="submit" class="login-button">Login</button>
                     <button @click="loginWithGoogle" class="google-login">Sign in with Google</button>
-                    <p class="signup-text">Don't have an account? <router-link to="/registration" class="signup-link">Sign up</router-link></p>
-                </form> 
-            </div>  
+                    <p class="signup-text">Don't have an account? <router-link to="/registration"
+                            class="signup-link">Sign up</router-link></p>
+                </form>
+            </div>
         </div>
     </div>
 </template>
@@ -42,22 +49,24 @@
 <script>
 import eyeClose from '@/assets/Eye-close.png';
 import eyeOpen from '@/assets/Eye-open.png';
-import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from 'firebase/auth';
 import { query, getDocs, collection, where, getFirestore } from 'firebase/firestore';
 import firebaseApp from '@/firebase.js';
 
 export default {
-    name:"Login",
+    name: "Login",
 
     data() {
         return {
             email: '',
             password: '',
-            emailError: null, // For email validation
-            isEmailValid: true, // For email validation
-            showPassword: false, // For password display
-            eyeCloseIcon: eyeClose, // For password display
-            eyeOpenIcon: eyeOpen, // For password display
+            // For email validation
+            emailError: null,
+            emailValid: false,
+            // For password display
+            showPassword: false,
+            eyeCloseIcon: eyeClose,
+            eyeOpenIcon: eyeOpen,
             auth: getAuth(firebaseApp),
             db: getFirestore(firebaseApp)
         }
@@ -67,13 +76,13 @@ export default {
         validateEmail() {
             const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,3}))$/;
             if (!this.email) {
-                this.isEmailValid = false;
+                this.emailValid = false;
                 this.emailError = null;
             } else if (emailRegex.test(this.email)) {
-                this.isEmailValid = true;
+                this.emailValid = true;
                 this.emailError = null;
             } else {
-                this.isEmailValid = false;
+                this.emailValid = false;
                 this.emailError = "Please enter a valid email address";
             }
         },
@@ -84,37 +93,45 @@ export default {
 
         async loginWithEmail() {
             try {
-            // Logss in a user with email and password
-            await signInWithEmailAndPassword(this.auth, this.email, this.password);
+                // Logss in a user with email and password
+                await signInWithEmailAndPassword(this.auth, this.email, this.password);
 
-            // Redirects users to the home page
-            this.$router.push('/home');
+                // Redirects users to the home page
+                this.$router.push('/home');
 
             } catch (error) {
-            alert("Incorrect email / password");
+                alert("Incorrect email / password");
             }
         },
 
         async loginWithGoogle() {
             const provider = new GoogleAuthProvider();
             try {
-            // Displays a popup window for google account login
-            const result = await signInWithPopup(this.auth, provider);
+                // Displays a popup window for google account login
+                const result = await signInWithPopup(this.auth, provider);
 
-            // Redirects users to the home page
-            this.$router.push('/home');
+                // Redirects users to the home page
+                this.$router.push('/home');
 
             } catch (error) {
-            alert(error.message);
+                alert(error.message);
+            }
+        },
+
+        async forgotPassword() {
+            try {
+                await sendPasswordResetEmail(this.auth, this.email);
+                alert("Password reset email sent! Please check your email!");
+            } catch (error) {
+                alert(error.message);
             }
         }
-  }
+    }
 
 };
 </script>
 
 <style scoped>
-
 * {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     box-sizing: border-box;
@@ -124,10 +141,10 @@ export default {
 
 .background {
     position: fixed;
-	bottom: 0;
-	right: 0;
-	height: 100%;
-	z-index: -1;
+    bottom: 0;
+    right: 0;
+    height: 100%;
+    z-index: -1;
 }
 
 .container {
@@ -140,27 +157,27 @@ export default {
 }
 
 .header-container {
-    display: flex; 
-    align-items: center; 
-    justify-content: flex-start; 
-    grid-column: 1 / -1; 
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    grid-column: 1 / -1;
     grid-row: 1;
     width: 100%;
     text-align: left;
 }
 
 .header-text {
-    display: inline-block; 
+    display: inline-block;
     font-size: 20px;
-    color: #4116b7; 
+    color: #4116b7;
     margin-top: 10px;
 }
 
 .logo {
-    height: 35px; 
+    height: 35px;
     width: auto;
     margin-top: 10px;
-    margin-left: 3px; 
+    margin-left: 3px;
 }
 
 .image {
@@ -171,7 +188,7 @@ export default {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    grid-column: 2; 
+    grid-column: 2;
     grid-row: 2;
     padding-bottom: 40px;
     margin-top: -40px;
@@ -182,18 +199,19 @@ export default {
     width: 150px;
 }
 
-.login-container { 
-    grid-column: 1; 
+.login-container {
+    grid-column: 1;
     grid-row: 2;
-	justify-content: flex-start;
-	align-items: center;
-	text-align: center;
+    justify-content: flex-start;
+    align-items: center;
+    text-align: center;
     padding: 15px 0px;
     margin-top: -30px;
     margin-left: 20px;
 }
 
-.image-container, .login-container {
+.image-container,
+.login-container {
     margin-bottom: 100px;
 }
 
@@ -207,28 +225,31 @@ export default {
 }
 
 .input-container i {
-    position: absolute;  
-    left: 103px; 
+    position: absolute;
+    left: 103px;
     top: 50%;
     transform: translateY(-50%);
-    color: #908d8d; 
+    color: #908d8d;
 }
 
 .input-wrapper {
     position: relative;
-}  
-
-input[type=email] {
-    padding: 15px 15px 15px 35px; 
 }
 
-input[type=password], input[type=text] {
+input[type=email] {
+    padding: 15px 15px 15px 35px;
+}
+
+input[type=password],
+input[type=text] {
     padding: 15px 45px 15px 35px;
 }
 
-input[type=email], input[type=password], input[type=text] {
-    width: 70% ;  
-    margin: 0; 
+input[type=email],
+input[type=password],
+input[type=text] {
+    width: 70%;
+    margin: 0;
     border: 1px solid #ccc;
     box-sizing: border-box;
     position: relative;
@@ -236,58 +257,73 @@ input[type=email], input[type=password], input[type=text] {
     outline: none;
 }
 
-input[type='email']:focus, input[type='password']:focus, input[type='text']:focus {
-    border: 2px solid #8414EC; 
-    transform: scale(1.025); 
+input[type='email']:focus,
+input[type='password']:focus,
+input[type='text']:focus {
+    border: 2px solid #8414EC;
+    transform: scale(1.025);
 }
 
-input[type='email']:focus + i, input[type='password']:focus + i, input[type='text']:focus + i {
+input[type='email']:focus+i,
+input[type='password']:focus+i,
+input[type='text']:focus+i {
     color: #8414EC;
 }
 
-input[type='email']:focus + i, input[type='text']:focus + i {
+input[type='email']:focus+i,
+input[type='text']:focus+i {
     color: #8414EC;
 }
 
 /* Email validation styles should override focus styles */
 .email-invalid {
-    border: 2px solid #ff3860 !important; 
+    border: 2px solid #ff3860 !important;
 }
 
 .icon-invalid {
-    color: #ff3860 !important; 
-} 
+    color: #ff3860 !important;
+}
 
 .email-valid {
     border: 2px solid #09c372 !important;
 }
 
 .icon-valid {
-    color: #09c372 !important; 
-} 
+    color: #09c372 !important;
+}
 
 .email-error {
     display: block;
     color: red;
     font-size: 12px;
-    margin-top: 4px; 
+    margin-top: 4px;
+    text-align: left;
+    padding-left: 95px;
+}
+
+.email-success {
+    display: block;
+    color: #09c372;
+    font-size: 12px;
+    margin-top: 4px;
     text-align: left;
     padding-left: 95px;
 }
 
 .password-eye {
-    position: absolute; 
+    position: absolute;
     right: 103px;
     top: 50%;
     transform: translateY(-50%);
-    height: 13px; 
+    height: 13px;
     width: auto;
     cursor: pointer;
 }
 
-.forgot-password, .signup-link {
+.forgot-password,
+.signup-link {
     text-decoration: none;
-    color: #4116b7; 
+    color: #4116b7;
 }
 
 .forgot-password:hover {
@@ -302,10 +338,11 @@ input[type='email']:focus + i, input[type='text']:focus + i {
     display: block;
     text-align: right;
     margin: 10px 95px 10px 0px;
-    font-size: 15px; 
+    font-size: 15px;
 }
 
-.login-button, .google-login {
+.login-button,
+.google-login {
     width: 70%;
     padding: 15px;
     margin: 10px 0;
@@ -320,17 +357,17 @@ button:hover {
     transform: scale(1.01);
 }
 
-.login-button{
-    background-image: linear-gradient(to right, #8414EC, #740CCC, #4116b7); 
+.login-button {
+    background-image: linear-gradient(to right, #8414EC, #740CCC, #4116b7);
 }
 
 .google-login {
-    background-color: #DB4437; /* Google button color */
+    background-color: #DB4437;
+    /* Google button color */
 }
 
 .signup-text {
     text-align: center;
-    margin-top: 5px;
+    margin-top: 10px;
 }
-
 </style>
