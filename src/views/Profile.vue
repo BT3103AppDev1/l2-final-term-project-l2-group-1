@@ -10,17 +10,21 @@
 
 <!-- <div > <h3><strong> This is the profile page </strong> </h3> </div>  -->
 
-        <div v-if="user">
-        <div > 
-        <img src="@/assets/logo.png" style="width:75px;height:75px;border-radius:50%;border:4px solid #333" />                                                                                                                      
+        <div class="ProfileMain" v-if="user">
+        <div class="photo"> 
+        <!-- <img src="@/assets/logo.png" style="width:75px;height:75px;border-radius:50%;border:4px solid #333" /> -->
+        <img id="profilePhoto"  src="@/assets/Profile.png" />                                            
         </div>
 
         <div>
-            <div >
-            <p>                                                                                                                                                              Name: <strong>{{user.displayName}}</strong><br/>
-                Email:<strong>{{user.email}}</strong><br>
-                Uid:<strong>{{user.uid}}</strong> <br>
-                Provider: <strong>{{user.providerData[0].providerId}}</strong> </p>
+            <div class="profileDetails">
+            <h2 class="name"> <strong>{{user.displayName}}</strong></h2><br/>
+            <p class="email"> Email:</p>
+            <p class="emailDetail"> <strong>{{user.email}}</strong></p> <br>
+            <p class="uid"> Uid: </p>
+            <p class="uidDetail"> <strong>{{user.uid}}</strong></p><br>
+            <p class="provider"> Provider: </p> 
+            <p class="providerDetail">  <strong>{{user.providerData[0].providerId}}</strong></p>
             </div>                                                                                                      
         </div>         
 
@@ -75,6 +79,23 @@ export default {
 </script>
 
 <style>
+.photo {
+  height: 200px;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#profilePhoto {
+  width:100px;
+  height:100px;
+  border-radius:50%; 
+  outline: 3px  solid black; 
+  background-color: white;
+}
+
 .header-container {
     display: flex; 
     align-items: center; 
@@ -97,5 +118,36 @@ export default {
     width: auto;
     margin-top: 10px;
     margin-left: 3px; 
+}
+
+.profileDetails {
+  max-width: 300px;
+  margin: 20px auto;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  padding: 20px;
+  box-shadow: 5px 5px rgb(202, 201, 201);
+  /* text-align: center; */
+}
+
+.name {
+  font-size: 24px;
+  color: #333;
+  margin: 0;
+}
+
+.email, .provider, .uid{
+  font-size: 15px;
+  text-align: left
+}
+
+.emailDetail, .uidDetail, .providerDetail{
+  text-align: left;
+}
+
+.ProfileMain {
+  background-image:url("@/assets/AboutBackground.png");
+  height: 700px;
 }
 </style>

@@ -197,6 +197,6 @@ export default {
   background-size: cover;
   background-repeat: no-repeat;
   background-position: top;
-  min-height: 850px;
+  min-height: 700px;
 }
 </style>
