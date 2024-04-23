@@ -149,5 +149,14 @@ export default {
 .ProfileMain {
   background-image:url("@/assets/AboutBackground.png");
   height: 700px;
+  background-repeat: no-repeat;
+  background-size: 100%;
+  background-size: cover;
+  background-image: url("@/assets/AboutBackground.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: top;
+  min-height: 700px;
+  width: 100%;
 }
 </style>
