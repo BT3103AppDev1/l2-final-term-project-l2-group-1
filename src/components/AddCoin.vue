@@ -34,7 +34,7 @@
         <label for="date">Date of Spending: </label>
         <input type="date" id="date" required="" v-model="date" /><br /><br />
 
-        <div class="Save">
+        <div class="save">
           <button id="savebutton" type="button" v-on:click="savetofs">
             Log it in!
           </button>
@@ -89,24 +89,32 @@ export default {
       if (!auth.currentUser) {
         console.error("No user is currently logged in.");
         return; // Stop execution if no user is logged in
+      } else if (
+        (this.amt.length === 0) |
+        (this.cat.length === 0) |
+        (this.subcat.length === 0) |
+        (this.date.length === 0)
+      ) {
+        alert("One or more fields are empty.");
+        return;
       }
 
       const userEmail = auth.currentUser.email;
       console.log(this.getMonthYearOfEntry());
-      
-      try {
-      const docRef = doc(collection(db, userEmail, "logs", this.getMonthYearOfEntry()));
-      const newDocId = docRef.id;
 
-        await setDoc(docRef,
-          {
-            documentId: newDocId,
-            amount: this.amt,
-            category: this.cat,
-            date: this.date,
-            subcategory: this.subcat,
-          }
+      try {
+        const docRef = doc(
+          collection(db, userEmail, "logs", this.getMonthYearOfEntry())
         );
+        const newDocId = docRef.id;
+
+        await setDoc(docRef, {
+          documentId: newDocId,
+          amount: this.amt,
+          category: this.cat,
+          date: this.date,
+          subcategory: this.subcat,
+        });
 
         console.log("Document written with ID: ", newDocId);
         this.amt = "";
@@ -118,7 +126,6 @@ export default {
         console.error("Error adding document: ", error);
       }
     },
-
   },
 };
 </script>
@@ -129,7 +136,7 @@ export default {
   color: #4116b7;
   font-size: 45px;
   text-shadow: 3px 3px rgb(205, 205, 205);
- }
+}
 .container {
   max-width: 600px; /* Or whatever maximum width you prefer */
   margin: auto; /* Center the container */
@@ -161,7 +168,7 @@ select {
   box-sizing: border-box;
 }
 
-.Save {
+.save {
   background-color: white;
 }
 
@@ -174,12 +181,12 @@ select {
   cursor: pointer;
   border-radius: 16px;
   font-weight: bold;
-  background-image: linear-gradient(to right, #8414EC, #740CCC, #4116b7); 
+  background-image: linear-gradient(to right, #8414ec, #740ccc, #4116b7);
   font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 #savebutton:hover {
   /* background-color: #4f339c; */
-  box-shadow: 3px 3px grey 
+  box-shadow: 3px 3px grey;
 }
 </style>
