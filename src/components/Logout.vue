@@ -44,7 +44,7 @@ export default {
 
 style <style scoped>
 #btn{
-  width: 40%;
+  width: 250px;
   padding: 15px;
   margin: 10px 0;
   border: none;
