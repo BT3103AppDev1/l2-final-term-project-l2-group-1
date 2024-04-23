@@ -19,12 +19,12 @@
         <div>
             <div class="profileDetails">
             <h2 class="name"> <strong>{{user.displayName}}</strong></h2><br/>
-            <p class="email"> Email:</p>
+            <p class="email">Your Email:</p>
             <p class="emailDetail"> <strong>{{user.email}}</strong></p> <br>
-            <p class="uid"> Uid: </p>
+            <!-- <p class="uid"> Uid: </p>
             <p class="uidDetail"> <strong>{{user.uid}}</strong></p><br>
             <p class="provider"> Provider: </p> 
-            <p class="providerDetail">  <strong>{{user.providerData[0].providerId}}</strong></p>
+            <p class="providerDetail">  <strong>{{user.providerData[0].providerId}}</strong></p> -->
             </div>                                                                                                      
         </div>         
 

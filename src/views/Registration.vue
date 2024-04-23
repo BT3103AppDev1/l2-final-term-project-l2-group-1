@@ -36,10 +36,10 @@
                         <div class="password-checklist">
                             <p>Password complexity</p>
                             <ul>
-                                <li :class="getClassForCondition('minCharacter')">At least 8 characters</li>
-                                <li :class="getClassForCondition('number')">At least 1 number</li>
-                                <li :class="getClassForCondition('uppercase')">At least 1 uppercase character</li>
-                                <li :class="getClassForCondition('specialChar')">At least 1 special character</li>
+                                <li :class="getClassForCondition('minCharacter')"><span>At least 8 characters</span></li>
+                                <li :class="getClassForCondition('number')"><span>At least 1 number</span></li>
+                                <li :class="getClassForCondition('uppercase')"><span>At least 1 uppercase character</span></li>
+                                <li :class="getClassForCondition('specialChar')"><span>At least 1 special character</span></li>
                             </ul>
                         </div>
                     </div>

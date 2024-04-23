@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 id="totalProfit">Total Profit is: {{ totalProfit }} USD</h1>
+    <h1 id="totalProfit">Your Total Expenditure is: ${{ totalProfit }}</h1>
   </div>
 </template>
 
