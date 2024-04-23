@@ -27,6 +27,7 @@
           <option value="Miscellaneous expenses">Miscellaneous expenses</option>
         </select>
         <br />
+        <br />
 
         <label for="subcat">Subcategory: </label>
         <input type="text" id="buy1" required="" v-model="subcat" /><br /><br />
