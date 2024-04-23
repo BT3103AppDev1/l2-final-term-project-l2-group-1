@@ -34,7 +34,7 @@
         <label for="date">Date of Spending: </label>
         <input type="date" id="date" required="" v-model="date" /><br /><br />
 
-        <div class="save">
+        <div class="Save">
           <button id="savebutton" type="button" v-on:click="savetofs">
             Log it in!
           </button>
@@ -168,7 +168,7 @@ select {
   box-sizing: border-box;
 }
 
-.save {
+.Save {
   background-color: white;
 }
 
