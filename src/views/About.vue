@@ -1,22 +1,33 @@
 <template>
   <div class="header-container">
     <h1 class="header-text">FinWise</h1>
-    <img class="logo" src="@/assets/Logo.jpg">
+    <img class="logo" src="@/assets/Logo.jpg" />
   </div>
-  <div class = "main" style="text-align: center" v-if="user">
+  <div class="main" style="text-align: center" v-if="user">
     <NavBar />
 
     <div class="Main">
-    <!-- <h2 id="Header">FinWise</h2> -->
-    <div id="mySpending">My spending for {{ mmyy }}.</div>
-    <div id="graph-container">
-      <div id="pie-container">
-        <pie-chart class="user" :data="pieData"></pie-chart>
+      <!-- <h2 id="Header">FinWise</h2> -->
+      <div id="mySpending">My spending for {{ mmyy }}.</div>
+      <div id="graph-container">
+        <div id="pie-container">
+          <pie-chart
+            class="user"
+            :data="pieData"
+            :round="0"
+            suffix="%"
+          ></pie-chart>
+        </div>
+        <div id="bar-container">
+          <column-chart
+            class="user"
+            :data="colData"
+            :round="2"
+            :zeros="true"
+            prefix="$"
+          ></column-chart>
+        </div>
       </div>
-      <div id="bar-container">
-        <column-chart class="user" :data="colData"></column-chart>
-      </div>
-    </div>
     </div>
     <LogOut /> <br /><br />
   </div>
@@ -59,17 +70,23 @@ export default {
       const db = getFirestore(firebaseApp);
       const monthYear = this.getMonthYear();
       const pie = {};
+      var tempSum = 0;
       const currMonthEntries = await getDocs(
         collection(db, email, "logs", monthYear)
       );
       this.pieData = {};
       currMonthEntries.forEach((doc) => {
         if (doc.data().category in pie) {
-          pie[doc.data().category] += parseInt(doc.data().amount);
+          pie[doc.data().category] += parseFloat(doc.data().amount);
         } else {
-          pie[doc.data().category] = parseInt(doc.data().amount);
+          pie[doc.data().category] = parseFloat(doc.data().amount);
         }
+        tempSum += parseFloat(doc.data().amount);
       });
+
+      for (const category in pie) {
+        pie[category] = (pie[category] / tempSum) * 100;
+      }
       this.pieData = pie;
     },
 
@@ -106,7 +123,7 @@ export default {
         if (i < 12) {
           monthIter =
             months[i] +
-            (parseInt(
+            (parseFloat(
               currDateTime.toLocaleString("default", { year: "2-digit" })
             ) -
               1);
@@ -118,7 +135,7 @@ export default {
         const monthData = await getDocs(collection(allMonthEntries, monthIter));
         monthData.forEach((doc) => {
           hasEntries = true;
-          monthTotal += parseInt(doc.data().amount);
+          monthTotal += parseFloat(doc.data().amount);
         });
         col[monthIter] = monthTotal;
       }
@@ -144,7 +161,7 @@ export default {
 #mySpending {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   font-weight: 1000;
-  color: #740CCC;
+  color: #740ccc;
   font-size: 50px;
   text-shadow: 3px 3px rgb(205, 205, 205);
 }
@@ -169,27 +186,27 @@ export default {
 }
 
 .header-container {
-    display: flex; 
-    align-items: center; 
-    justify-content: flex-start; 
-    grid-column: 1 / -1; 
-    grid-row: 1;
-    width: 100%;
-    text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  grid-column: 1 / -1;
+  grid-row: 1;
+  width: 100%;
+  text-align: left;
 }
 
 .header-text {
-    display: inline-block; 
-    font-size: 20px;
-    color: #4116b7; 
-    margin-top: 20px;
+  display: inline-block;
+  font-size: 20px;
+  color: #4116b7;
+  margin-top: 20px;
 }
 
 .logo {
-    height: 35px; 
-    width: auto;
-    margin-top: 10px;
-    margin-left: 3px; 
+  height: 35px;
+  width: auto;
+  margin-top: 10px;
+  margin-left: 3px;
 }
 
 .Main {
