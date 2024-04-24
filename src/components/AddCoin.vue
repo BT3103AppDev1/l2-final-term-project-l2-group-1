@@ -83,9 +83,7 @@ export default {
     },
 
     async savetofs() {
-      console.log("Saving to Firestore");
       const auth = getAuth();
-
       if (!auth.currentUser) {
         console.error("No user is currently logged in.");
         return; // Stop execution if no user is logged in
@@ -100,7 +98,6 @@ export default {
       }
 
       const userEmail = auth.currentUser.email;
-      console.log(this.getMonthYearOfEntry());
 
       try {
         const docRef = doc(
@@ -116,7 +113,7 @@ export default {
           subcategory: this.subcat,
         });
 
-        console.log("Document written with ID: ", newDocId);
+        alert("Entry logged!");
         this.amt = "";
         this.cat = "";
         this.subcat = "";
