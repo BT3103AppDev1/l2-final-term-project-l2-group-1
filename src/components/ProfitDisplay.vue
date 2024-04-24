@@ -42,7 +42,7 @@
 
     <div v-if="isEditing">
       <form @submit.prevent="updateDocument">
-        <input type="number" v-model="amt" placeholder="Amount" />
+        <input type="number" v-model="amt" placeholder="Amount" step="any" />
         <select v-model="cat">
           <option disabled value="">Please select a category</option>
           <option value="Mortgage or rent">Mortgage or rent</option>
