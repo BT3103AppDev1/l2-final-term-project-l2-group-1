@@ -44,7 +44,7 @@ export default {
         collection(db, email, "logs", monthYear)
       );
       currMonthEntries.forEach((doc) => {
-        currMonthExp += parseInt(doc.data().amount);
+        currMonthExp += parseFloat(doc.data().amount);
       });
       this.totalSpending = currMonthExp;
     },
@@ -60,3 +60,4 @@ export default {
   text-shadow: 3px 3px rgb(205, 205, 205);
 }
 </style>
+
