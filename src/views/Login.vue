@@ -34,7 +34,6 @@
                         <span @click="showHidePassword"><img class="password-eye"
                                 :src="showPassword ? eyeOpenIcon : eyeCloseIcon"></span>
                     </div>
-                    <!-- Change a tag to router link to forgot password page -->
                     <a class="forgot-password" @click="forgotPassword">Forgot Password?</a>
                     <button type="submit" class="login-button">Login</button>
                     <button @click="loginWithGoogle" class="google-login">Sign in with Google</button>
@@ -363,7 +362,6 @@ button:hover {
 
 .google-login {
     background-color: #DB4437;
-    /* Google button color */
 }
 
 .signup-text {

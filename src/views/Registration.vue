@@ -7,7 +7,6 @@
                 <img class="logo" src="@/assets/Logo.jpg">
         </div>
 
-        <!-- Might need to change the image in order to not make it so similar to the login page -->
         <div class="image-container">
             <img class="image" src="@/assets/Register.png">
         </div>
