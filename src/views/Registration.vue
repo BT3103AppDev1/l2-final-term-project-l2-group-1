@@ -24,7 +24,7 @@
                             <i class='bx bx-envelope' :class="{'icon-invalid': emailError, 'icon-valid': emailValid && email}"></i>
                         </div>
                         <span class="email-error" v-if="emailError">{{ emailError }}</span>
-                        <span class="email-success" v-if="emailValid && !emailError">Email address is valid!</span>
+                        <span class="email-success" v-if="emailValid && !emailError">Valid email format! (We will check if your email is already registered after you click the "Register" button!) </span>
                     </div>
                     <div class="input-container" :class="{ 'input-wrapper-focused': passwordFocused }">
                         <div class="input-wrapper">
@@ -325,6 +325,9 @@ input[type='email']:focus + i, input[type='text']:focus + i {
     margin-top: 4px;
     text-align: left;
     padding-left: 95px;
+    max-width: calc(100% - 90px);
+    word-wrap: break-word;
+    line-height: 1.5;
 }
 
 .password-checklist {
