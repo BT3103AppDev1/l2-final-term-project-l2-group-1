@@ -8,7 +8,10 @@
 
     <div class="Main">
       <!-- <h2 id="Header">FinWise</h2> -->
-      <div id="mySpending">My spending for {{ mmyy }}.</div>
+      <div class="Headers">
+        <div id="mySpending">My spending for {{ mmyy }}.</div>
+        <div id="past12Months">Spending over the past 12 Months</div>
+      </div>
       <div id="graph-container">
         <div id="pie-container">
           <pie-chart
@@ -158,11 +161,12 @@ export default {
 </script>
 
 <style scoped>
-#mySpending {
+#mySpending, #past12Months {
+  width: 50%;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   font-weight: 1000;
   color: #740ccc;
-  font-size: 50px;
+  font-size: 45px;
   text-shadow: 3px 3px rgb(205, 205, 205);
 }
 
@@ -215,5 +219,10 @@ export default {
   background-repeat: no-repeat;
   background-position: top;
   min-height: 700px;
+}
+
+.Headers {
+  display: flex;
+  border: 10px;
 }
 </style>
