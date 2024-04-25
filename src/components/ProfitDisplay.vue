@@ -38,7 +38,7 @@
     <br />
     <br />
 
-    <h2 id="totalProfit"> Total Expenses: ${{ totalProfit }} </h2>
+    <h2 id="totalProfit"> Total Expenses: ${{ totalProfit.toFixed(2) }} </h2>
 
     <div v-if="isEditing">
       <form @submit.prevent="updateDocument">
