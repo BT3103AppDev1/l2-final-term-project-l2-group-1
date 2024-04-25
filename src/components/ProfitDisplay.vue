@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <h1 id="Current">Logbook!</h1>
+  <div class="Main">
+    <h1 id="Current">Logbook</h1>
 
     <div>
       <label for="startMonth">Start Month:</label>
@@ -38,11 +38,11 @@
     <br />
     <br />
 
-    <h2 id="totalProfit"> Total Expenses: {{ totalProfit }} USD</h2>
+    <h2 id="totalProfit"> Total Expenses: ${{ totalProfit.toFixed(2) }} </h2>
 
     <div v-if="isEditing">
       <form @submit.prevent="updateDocument">
-        <input type="number" v-model="amt" placeholder="Amount" step="any"/>
+        <input type="number" v-model="amt" placeholder="Amount" step="any" />
         <select v-model="cat">
           <option disabled value="">Please select a category</option>
           <option value="Mortgage or rent">Mortgage or rent</option>
@@ -62,8 +62,8 @@
         </select>
         <input type="text" v-model="subcat" placeholder="Subcategory" />
         <input type="date" v-model="date" placeholder="Date" />
-        <button type="submit">Save Changes</button>
-        <button @click="clearForm">Cancel</button>
+        <button type="submit" class="save">Save Changes</button>
+        <button @click="clearForm" class="cancel">Cancel</button>
       </form>
     </div>
 
@@ -191,7 +191,7 @@ export default {
       this.subcat = row.subcategory;
       this.date = row.date;
       this.editingDocumentId = row.documentId; 
-      this.isEditing = true; // Toggle editing state, form for editing pops up below table
+      this.isEditing = true; // Toggle editing state, form for editing pops up
     },
 
     async updateDocument() {
@@ -296,12 +296,15 @@ h1 {
 table {
 
   font-family: arial, sans-serif;
-  border-collapse: collapse;
+  border-collapse: separate;
   width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-tr:nth-child(even) {
-  background-color: #e3edee;
+tr:nth-child(odd) {
+  background-color: #dabef3;
 }
 
 th,td {
@@ -312,12 +315,62 @@ th,td {
 
 .bwt{
     color:rgb(243, 236, 236);
-    background-color: rgb(255, 94, 0);
+    background-color: #DB4437;
+    border: none; 
+    padding: 5px 10px; 
+    border-radius: 4px; 
+    cursor: pointer; 
+    box-shadow: 0px 1px 2px 0px grey;
 }
 
 .edit {
-  background-color: blue;
+  background-color: #740CCC;
   color: white;
+  border: 2px white; 
+  padding: 5px 10px; 
+  border-radius: 4px; 
+  cursor: pointer; 
+  box-shadow: 0px 1px 2px 0px grey;
 }
 
+.save {
+  background-color: #740CCC;
+  color: rgb(255, 255, 255); 
+  cursor: pointer; 
+  border: none;
+  padding: 4px;
+  border-radius: 4px; 
+} 
+
+.cancel {
+  background-color:#DB4437;
+  color: white; 
+  cursor: pointer; 
+  border: none;
+  padding: 4px;
+  border-radius: 4px; 
+}
+.save:hover {
+  background-color: #8937cc;
+}
+
+.cancel:hover {
+  background-color: #e6756b;
+}
+
+#Current {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-weight: 1000;
+  color: #740CCC;
+  font-size: 50px;
+  text-shadow: 3px 3px rgb(205, 205, 205);                                                                                                                                                                                                                                                
+}
+
+/* .Main {
+  background-image: url("@/assets/AboutBackground.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: top;
+  min-height: 850px;
+} */
 </style>
