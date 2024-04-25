@@ -9,7 +9,7 @@
       <div class="NavBarComp"><NavBar /></div>
       <div class="WelcomeComp"><WelcomeCpp /></div>
       <div class="AddCoinComp"><AddCoin @added="change" /></div>
-      <div class="CurrMonthExp"><CurrMonthExp /></div>
+      <div class="CurrMonthExp"><CurrMonthExp :key="refreshComp" /></div>
 
       <LogOut />
     </div>
