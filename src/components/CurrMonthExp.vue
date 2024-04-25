@@ -46,7 +46,7 @@ export default {
       currMonthEntries.forEach((doc) => {
         currMonthExp += parseFloat(doc.data().amount);
       });
-      this.totalSpending = currMonthExp;
+      this.totalSpending = currMonthExp.toFixed(2);
     },
   },
 };
